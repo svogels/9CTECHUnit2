@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Code - VS Code Theme</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        .editor-window {
+            width: 90%;
+            max-width: 800px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .editor-header {
+            background-color: #3c3c3c;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .close { background-color: #ff5f56; }
+        .minimize { background-color: #ffbd2e; }
+        .maximize { background-color: #27c93f; }
+
+        .file-tab {
+            color: #d4d4d4;
+            background-color: #1e1e1e;
+            padding: 8px 15px;
+            border-radius: 5px 5px 0 0;
+            font-size: 14px;
+        }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* VS Code "Dark+" Theme Syntax Highlighting */
+        .token-comment { color: #6A9955; }
+        .token-keyword { color: #569CD6; }
+        .token-module, .token-class { color: #4EC9B0; }
+        .token-function { color: #DCDCAA; }
+        .token-variable { color: #9CDCFE; }
+        .token-string { color: #CE9178; }
+        .token-number { color: #B5CEA8; }
+        .token-operator { color: #D4D4D4; }
+        .token-punctuation { color: #D4D4D4; }
+        .token-keyword-alt { color: #C586C0; }
+    </style>
+</head>
+<body>
+
+    <div class="editor-window">
+        <div class="editor-header">
+            <div class="window-controls">
+                <div class="control-dot close"></div>
+                <div class="control-dot minimize"></div>
+                <div class="control-dot maximize"></div>
+            </div>
+            <div class="file-tab">
+                main.py
+            </div>
+        </div>
+        <pre><code><span class="token-keyword">import</span> <span class="token-module">pygame</span>
+<span class="token-keyword">import</span> <span class="token-module">sys</span>
+
+<span class="token-comment"># Initialize Pygame</span>
+<span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-function">init</span><span class="token-punctuation">()</span>
+
+<span class="token-comment"># Set up the display</span>
+<span class="token-variable">WINDOW_WIDTH</span> <span class="token-operator">=</span> <span class="token-number">800</span>
+<span class="token-variable">WINDOW_HEIGHT</span> <span class="token-operator">=</span> <span class="token-number">600</span>
+<span class="token-variable">screen</span> <span class="token-operator">=</span> <span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-variable">display</span><span class="token-punctuation">.</span><span class="token-function">set_mode</span><span class="token-punctuation">((</span><span class="token-variable">WINDOW_WIDTH</span><span class="token-punctuation">,</span> <span class="token-variable">WINDOW_HEIGHT</span><span class="token-punctuation">))</span>
+<span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-variable">display</span><span class="token-punctuation">.</span><span class="token-function">set_caption</span><span class="token-punctuation">(</span><span class="token-string">"My First Game Window"</span><span class="token-punctuation">)</span>
+
+<span class="token-comment"># Define colors (R, G, B)</span>
+<span class="token-variable">BLACK</span> <span class="token-operator">=</span> <span class="token-punctuation">(</span><span class="token-number">0</span><span class="token-punctuation">,</span> <span class="token-number">0</span><span class="token-punctuation">,</span> <span class="token-number">0</span><span class="token-punctuation">)</span>
+<span class="token-variable">WHITE</span> <span class="token-operator">=</span> <span class="token-punctuation">(</span><span class="token-number">255</span><span class="token-punctuation">,</span> <span class="token-number">255</span><span class="token-punctuation">,</span> <span class="token-number">255</span><span class="token-punctuation">)</span>
+
+<span class="token-comment"># Game loop</span>
+<span class="token-variable">running</span> <span class="token-operator">=</span> <span class="token-keyword-alt">True</span>
+<span class="token-variable">clock</span> <span class="token-operator">=</span> <span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-variable">time</span><span class="token-punctuation">.</span><span class="token-class">Clock</span><span class="token-punctuation">()</span>
+
+<span class="token-keyword">while</span> <span class="token-variable">running</span><span class="token-punctuation">:</span>
+    <span class="token-comment"># Handle events</span>
+    <span class="token-keyword">for</span> <span class="token-variable">event</span> <span class="token-keyword">in</span> <span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-variable">event</span><span class="token-punctuation">.</span><span class="token-function">get</span><span class="token-punctuation">():</span>
+        <span class="token-keyword">if</span> <span class="token-variable">event</span><span class="token-punctuation">.</span><span class="token-variable">type</span> <span class="token-operator">==</span> <span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-variable">QUIT</span><span class="token-punctuation">:</span>
+            <span class="token-variable">running</span> <span class="token-operator">=</span> <span class="token-keyword-alt">False</span>
+
+    <span class="token-comment"># Fill the screen</span>
+    <span class="token-variable">screen</span><span class="token-punctuation">.</span><span class="token-function">fill</span><span class="token-punctuation">(</span><span class="token-variable">BLACK</span><span class="token-punctuation">)</span>
+
+    <span class="token-comment"># Update display</span>
+    <span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-variable">display</span><span class="token-punctuation">.</span><span class="token-function">flip</span><span class="token-punctuation">()</span>
+    <span class="token-variable">clock</span><span class="token-punctuation">.</span><span class="token-function">tick</span><span class="token-punctuation">(</span><span class="token-number">60</span><span class="token-punctuation">)</span>  <span class="token-comment"># 60 FPS</span>
+
+<span class="token-comment"># Quit</span>
+<span class="token-module">pygame</span><span class="token-punctuation">.</span><span class="token-function">quit</span><span class="token-punctuation">()</span>
+<span class="token-module">sys</span><span class="token-punctuation">.</span><span class="token-function">exit</span><span class="token-punctuation">()</span>
+</code></pre>
+    </div>
+
+</body>
+</html>

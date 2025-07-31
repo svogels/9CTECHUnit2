@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year 9 Game Design Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive timeline, segmented into the three core phases of the teaching program. This structure was chosen over a static table to provide a clear, chronological user flow that mirrors the students' journey. Users can navigate between phases using prominent tabs. Within each phase, weeks are presented as expandable cards, allowing users to drill down into specific details (learning intentions, activities, portfolio links) without being overwhelmed. This hierarchical approach improves usability by progressively disclosing information. An interactive chart provides a high-level overview of activity types, offering a different lens for analyzing the program's structure. -->
+    <!-- Visualization & Content Choices: Report Info: Weekly lesson plans -> Goal: Organize & Inform -> Viz/Presentation: Interactive timeline with expandable cards (HTML/CSS/JS). Interaction: Clicking a week card reveals detailed information. Justification: This is more engaging and less cluttered than a large table, guiding the user through the curriculum sequentially. Report Info: Types of learning activities (I Do, We Do, You Do, etc.) -> Goal: Compare & Analyze -> Viz/Presentation: Doughnut Chart (Chart.js/Canvas). Interaction: Tooltips on hover provide exact counts. Justification: A chart offers a quick visual summary of the pedagogical approach, highlighting the balance of teacher-led vs. student-led activities, which is difficult to grasp from text alone. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .tab-active {
+            background-color: #8D6E63;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            background-color: #EFEBE9;
+            color: #5D4037;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-left: 4px solid #A1887F;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .details-hidden {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .details-visible {
+            max-height: 1200px;
+            transition: max-height 0.7s ease-in;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: auto;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#4E342E]">Year 9 Game Design Program</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">An interactive guide to the 12-week journey of designing, developing, and programming a simple arcade game with Python and Pygame.</p>
+        </header>
+
+        <main>
+            <div class="mb-8">
+                <div class="flex justify-center rounded-lg shadow-sm p-1 bg-[#EFEBE9] max-w-lg mx-auto" id="tab-container">
+                    <button data-phase="phase1" class="tab-button flex-1 py-2 px-4 rounded-md text-sm md:text-base transition-colors duration-300 tab-active">Phase 1: Foundations</button>
+                    <button data-phase="phase2" class="tab-button flex-1 py-2 px-4 rounded-md text-sm md:text-base transition-colors duration-300 tab-inactive">Phase 2: Development</button>
+                    <button data-phase="phase3" class="tab-button flex-1 py-2 px-4 rounded-md text-sm md:text-base transition-colors duration-300 tab-inactive">Phase 3: Refinement</button>
+                </div>
+            </div>
+
+            <div id="content-container">
+            </div>
+
+             <section id="analytics" class="mt-16 bg-white p-6 rounded-2xl shadow-md border border-gray-200">
+                <h2 class="text-2xl font-bold text-center text-[#4E342E] mb-2">Program Activity Breakdown</h2>
+                 <p class="text-center text-gray-600 mb-6">This chart provides an overview of the different types of learning activities scheduled throughout the 12-week program. It helps visualize the balance between teacher-led instruction ("I Do"), collaborative work ("We Do"), and independent student practice ("You Do"), along with engagement hooks.</p>
+                <div class="chart-container">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-gray-500">Designed to support the Year 9 Computer Technology curriculum.</p>
+        </footer>
+    </div>
+
+    <script>
+        const programData = {
+            phase1: {
+                title: "Phase 1: Foundations & Ideation",
+                goal: "Introduce the project, recap Python fundamentals, introduce Pygame, and complete the initial research and design phases of the portfolio.",
+                weeks: [
+                    { week: "W1/L1", outcomes: "CT5-DPM-01: Applies iterative processes to define problems. <br> CT5-THI-01: Applies computational and design thinking.", focus: "Unit Intro & What is a Game?", intention: "To understand the scope of the game design project and deconstruct the fundamental components of a simple game.", criteria: "I can explain the goal of the assessment task. I can define the term 'game loop' (Input, Process, Output). I can identify the design brief constraints for my game idea.", hook: "Play PONG and deconstruct its core mechanics.", activities: "I Do: Introduce Assessment Task. Explain game loop concept. <br>We Do: Map out the simple game loop for PONG. <br>You Do: Students begin their Design Brief.", portfolio: "Intro to Assessment Task Portfolio: Design Brief & Constraints.", grok: "No coding activity. Focus on theory and planning." },
+                    { week: "W2/L2", outcomes: "CT5-OPL-01: Implements algorithms in a programming language.", focus: "Python & Pygame Setup", intention: "To set up the Python and Pygame development environment and create a basic game window.", criteria: "I can install and import Pygame. I can write Python code to generate a window with a specific size and title. I can create a main game loop that allows the window to be closed cleanly.", hook: "Play Space Invaders, focusing on input and on-screen info.", activities: "I Do: Live Code Demo of Python Basics & Pygame window. <br>We Do: Students follow along to make their first main.py file. <br>You Do: Students experiment with window size, title, and background colour.", portfolio: "Technical Setup. Begin coding skills development.", grok: "<strong>Grok - Intro to Python (Beginner):</strong><br>- Module 1: Getting Started (Printing)<br>- Module 2: Variables<br><strong>DT Challenge: Space Junk:</strong><br>-Module 1: Getting Started (Setting up the screen)" },
+                    { week: "W3/L3", outcomes: "CT5-OPL-01: Designs and produces algorithms. <br> CT5-DES-01: Designs and creates user interfaces.", focus: "Drawing & Player Movement", intention: "To learn how to draw shapes and control a player object using keyboard inputs.", criteria: "I can use Pygame functions to draw a rectangle. I can write conditional statements to detect key presses. I can update my player object's coordinates to create movement.", hook: "Revisit Space Invaders, analyzing player movement constraints.", activities: "I Do: Demonstrate drawing a pygame.Rect and if event.key logic. <br>We Do: Code together to make a rectangle move left and right. <br>You Do: Tutorial to create a player that moves in four directions.", portfolio: "Portfolio: Research (Game Mechanics). Core coding: Input & Output.", grok: "<strong>DT Challenge: Space Junk:</strong><br>- Module 2: Drawing the Player<br>- Module 3: Moving the Player (Keyboard Input)" },
+                    { week: "W4/L4", outcomes: "CT5-DPM-01: Plans and designs computing solutions. <br> CT5-THI-01: Applies design and systems thinking. <br> CT5-EVL-01: Understands the evolution of computing technology.", focus: "Research, Planning & Flowcharts", intention: "To analyse existing arcade games and plan a game's logic using a flowchart.", criteria: "I can create a PMI chart for two classic arcade games. I can create a logical flowchart that maps the sequence of my own proposed game.", hook: "Student Choice: Play a game from the research list (Jet Fighter, Snake, Pac-Man).", activities: "I Do: Show an example of a good PMI and a simple flowchart. <br>We Do: As a class, start creating a flowchart for Space Invaders. <br>You Do: Students work on the \"Researching and Planning\" section of their portfolio.", portfolio: "Portfolio Milestone: Complete 'Identifying & Defining' and 'Researching & Planning' sections.", grok: "No new coding activity. Focus on design and algorithmic thinking." }
+                ]
+            },
+            phase2: {
+                title: "Phase 2: Core Development Sprint",
+                goal: "The main build phase. Students work in pairs to code their game, turning their flowchart into a functional prototype.",
+                weeks: [
+                    { week: "W5/L5 & L6", outcomes: "CT5-DPM-01: Develops computing solutions. <br> CT5-OPL-01: Implements algorithms. <br> CT5-COL-01: Manages and documents collaborative work.", focus: "Project Kick-off & Collision", intention: "To understand the principles of collision detection and to implement a shooting mechanic.", criteria: "I can create a 'bullet' object when a key is pressed. I can use colliderect() to detect when two objects overlap. I can make an object disappear after a collision.", hook: "Play Galaga/Asteroids to deconstruct bullet mechanics.", activities: "L5 (I/We Do): Demonstrate creating a 'bullet' class/object. Introduce colliderect().<br>L6 (You Do): Pairs implement shooting and a static enemy. Goal: Shoot a block to make it disappear.", portfolio: "'Producing & Implementing' (Dev Log) begins. Core coding: Collision.", grok: "<strong>DT Challenge: Space Junk:</strong><br>- Module 4: Shooting Lasers<br>- Module 5: Collision Detection" },
+                    { week: "W6/L7 & W7/L8 & L9", outcomes: "CT5-OPL-01: Designs and produces complex algorithms. <br> CT5-THI-01: Applies computational thinking. <br> CT5-DES-01: Creates user experiences.", focus: "Loops, Lists, Enemies & Game State", intention: "To manage multiple game objects using lists and loops. To implement autonomous NPC movement. To display text and manage the game's state. To create clear win/loss conditions.", criteria: "I can store enemies in a list. I can use a for loop to draw/update every enemy. I can render text to the screen. I can update a score variable. I can use a boolean (game_over) to control the game loop.", hook: "Revisit Space Invaders<br>Play: Pac-Man<br>Deconstruct movement, scoring, and game state triggers.", activities: "I/We Do: Use a for loop for multiple enemies. Demonstrate rendering text for score. Introduce a game_over variable.<br>You Do: Students implement multiple moving enemies, a scoring system, and win/loss conditions.", portfolio: "Dev Log entries on loops, game state, variables, booleans, and displaying text.", grok: "<strong>Grok - Intro to Python (Beginner):</strong> <br>- Module 4: Lists<br>- Module 5: For Loops<br><strong>DT Challenge: Space Junk:</strong><br>- Module 6: Spawning Enemies<br>- Module 7: Scoring and Text" },
+                    { week: "W8/L10", outcomes: "CT5-DPM-01: Applies iterative processes to develop solutions. <br> CT5-OPL-01: Evaluates algorithms.", focus: "Workshop & Consolidation", intention: "To apply debugging techniques to solve problems and to consolidate all implemented mechanics into a playable prototype.", criteria: "I can use print statements to trace variable values and identify bugs. I can work with my partner to solve a specific coding problem. My game has a start, gameplay, and end condition.", hook: "Developer's Choice: <br>Revisit any game that inspires a mechanic they are struggling with.", activities: "Full \"You Do\" workshop lesson. Teacher circulates to provide targeted support. Goal: Game must have a start screen and a functioning score.", portfolio: "Portfolio: Catch-up on Dev Log entries with screenshots. Focused project work time.", grok: "<strong>Grok - Debugging (Beginner):</strong> <br>- All modules (focus on reading tracebacks and using print statements)." },
+                    { week: "W9/L11", outcomes: "CT5-DES-01: Designs and creates the user experience. <br> CT5-SAF-01: Applies safe and responsible practices (re: assets).", focus: "Adding Polish: Sound & Images", intention: "To enhance the user experience by adding sound effects and image sprites.", criteria: "I can create an 'assets' folder. I can load and play a sound effect on a specific event. I can replace a drawn rectangle with a loaded sprite image.", hook: "Play: Any game with iconic sounds (Pac-Man, Donkey Kong)<br>Discuss how sound adds to the experience.", activities: "I Do: Demonstrate pygame.mixer.Sound() and pygame.image.load().<br>We Do: Together, replace a shape with a sprite.<br>You Do: Students find/create and implement simple assets.", portfolio: "Portfolio: Dev Log on asset implementation. Final coding elements.", grok: "<strong>DT Challenge: Space Junk:</strong> <br>- Module 8: Adding Graphics and Sound (if available, or use as extension)" }
+                ]
+            },
+            phase3: {
+                title: "Phase 3: Alpha, Testing & Refinement",
+                goal: "Finalise a playable game, conduct testing, gather feedback, and complete the portfolio.",
+                weeks: [
+                    { week: "W10/L12 & L13", outcomes: "CT5-DPM-01: Applies iterative processes to evaluate solutions. <br> CT5-COL-01: Manages and explains collaborative work practices.", focus: "Alpha Build & Peer Testing", intention: "To finalise a feature-complete 'alpha' version and to conduct structured testing.", criteria: "I can ensure my game is playable from start to finish. I can check that all core mechanics are present. I can give and receive constructive feedback.", hook: "Informal Peer Play:<br>Quick swap with another pair for 5 mins. What is fun? What is confusing?", activities: "L12 (You Do): \"Alpha Crunch\" to get the game playable. <br>L13 (We/You Do): Structured Peer Testing with a feedback form.", portfolio: "Portfolio: \"Testing and Evaluating\" section begins.", grok: "Project application and debugging. No new Grok modules needed." },
+                    { week: "T2 W1/L14 & L15", outcomes: "CT5-DPM-01: Evaluates computing solutions. <br> CT5-COM-01: Communicates ideas and solutions.", focus: "Beta Build & Final Portfolio", intention: "To refine our game by implementing feedback and to complete the final evaluation.", criteria: "I can identify and implement critical feedback. I can modify my code to fix bugs. I can write the 300-word evaluation in my portfolio.", hook: "Replay own game:<br>Play their own game with fresh eyes after the break.", activities: "I Do: Go over requirements for the final evaluation. <br>We/You Do: Students implement changes, fix bugs, and write their final evaluation.", portfolio: "Portfolio DUE: \"Testing and Evaluating\" section completed. The entire portfolio should be finished.", grok: "Project application and refinement." },
+                    { week: "T2 W2/L16 - T2 W3/L18", outcomes: "CT5-COM-01: Communicates processes and solutions. <br> CT5-DPM-01: Evaluates computing solutions. <br> CT5-SAF-01: Applies safe and responsible practices in a collaborative setting.", focus: "Presentation Prep & Indie Arcade Showcase!", intention: "To prepare and deliver a clear presentation and to evaluate the work of peers.", criteria: "I can create a short presentation. I can rehearse a live demo. I can clearly explain and confidently demonstrate my game.", hook: "INDIE ARCADE DAY!", activities: "L16: Prepare presentation. <br>L17 & L18: Formal Presentations and peer-marking. Free-play arcade.", portfolio: "FINAL SUBMISSION: Game files and completed portfolio due.", grok: "Project Showcase and evaluation." }
+                ]
+            }
+        };
+
+        const tabContainer = document.getElementById('tab-container');
+        const contentContainer = document.getElementById('content-container');
+
+        function renderContent(phase) {
+            const phaseData = programData[phase];
+            let contentHTML = `
+                <div id="${phase}" class="phase-content">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-[#6D4C41]">${phaseData.title}</h2>
+                        <p class="mt-2 text-gray-600 max-w-2xl mx-auto">${phaseData.goal}</p>
+                    </div>
+                    <div class="space-y-4">
+                        ${phaseData.weeks.map((item, index) => `
+                            <div class="card rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                                <button class="w-full text-left p-4 flex justify-between items-center focus:outline-none" data-target="details-${phase}-${index}">
+                                    <div class="flex items-center flex-wrap">
+                                        <span class="text-lg font-semibold text-[#8D6E63] mr-4">${item.week}</span>
+                                        <h3 class="text-xl font-semibold text-gray-800">${item.focus}</h3>
+                                    </div>
+                                    <span class="transform transition-transform duration-300 text-[#8D6E63] text-2xl ml-2" id="arrow-${phase}-${index}">&#x25BC;</span>
+                                </button>
+                                <div id="details-${phase}-${index}" class="details-hidden px-4 pb-4">
+                                    <div class="border-t pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <div class="lg:col-span-3">
+                                            <h4 class="font-bold text-gray-700 mb-2">NESA Syllabus Outcomes:</h4>
+                                            <div class="text-gray-600 text-sm">${item.outcomes}</div>
+                                        </div>
+                                        <div class="lg:col-span-2">
+                                            <h4 class="font-bold text-gray-700 mb-2">Learning Intention:</h4>
+                                            <p class="text-gray-600">${item.intention}</p>
+                                        </div>
+                                         <div>
+                                            <h4 class="font-bold text-gray-700 mb-2">"Arcade Hook" Activity:</h4>
+                                            <p class="text-gray-600">${item.hook}</p>
+                                        </div>
+                                        <div class="lg:col-span-3">
+                                             <h4 class="font-bold text-gray-700 mb-2">Success Criteria:</h4>
+                                            <p class="text-gray-600">${item.criteria}</p>
+                                        </div>
+                                        <div class="lg:col-span-2">
+                                            <h4 class="font-bold text-gray-700 mb-2">Lesson Activities:</h4>
+                                            <p class="text-gray-600">${item.activities}</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <h4 class="font-bold text-gray-700 mb-2">Portfolio / Assessment Link:</h4>
+                                            <p class="text-gray-600">${item.portfolio}</p>
+                                        </div>
+                                        <div class="lg:col-span-3">
+                                            <h4 class="font-bold text-gray-700 mb-2">Suggested Grok Academy Activities:</h4>
+                                            <div class="text-gray-600">${item.grok}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            contentContainer.innerHTML = contentHTML;
+            addCardListeners();
+        }
+
+        function handleTabClick(event) {
+            if (event.target.classList.contains('tab-button')) {
+                const buttons = tabContainer.querySelectorAll('.tab-button');
+                buttons.forEach(button => {
+                    button.classList.remove('tab-active');
+                    button.classList.add('tab-inactive');
+                });
+                event.target.classList.add('tab-active');
+                event.target.classList.remove('tab-inactive');
+                renderContent(event.target.dataset.phase);
+            }
+        }
+        
+        function addCardListeners() {
+            const cards = contentContainer.querySelectorAll('.card button');
+            cards.forEach(cardButton => {
+                cardButton.addEventListener('click', () => {
+                    const targetId = cardButton.dataset.target;
+                    const detailsDiv = document.getElementById(targetId);
+                    const arrow = document.getElementById(`arrow-${targetId.replace('details-', '')}`);
+                    
+                    const isVisible = detailsDiv.classList.contains('details-visible');
+
+                    if (isVisible) {
+                        detailsDiv.classList.remove('details-visible');
+                        detailsDiv.classList.add('details-hidden');
+                        arrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        detailsDiv.classList.remove('details-hidden');
+                        detailsDiv.classList.add('details-visible');
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        }
+
+        tabContainer.addEventListener('click', handleTabClick);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContent('phase1');
+
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            const activityData = {
+                labels: ['"I Do" (Demonstrations)', '"We Do" (Guided Practice)', '"You Do" (Independent/Paired Work)', '"Arcade Hook" (Engagement)'],
+                datasets: [{
+                    label: 'Number of Sessions',
+                    data: [5, 6, 8, 11],
+                    backgroundColor: [
+                        'rgba(141, 110, 99, 0.7)',
+                        'rgba(161, 136, 127, 0.7)',
+                        'rgba(188, 170, 164, 0.7)',
+                        'rgba(239, 235, 233, 0.9)'
+                    ],
+                    borderColor: [
+                        '#8D6E63',
+                        '#A1887F',
+                        '#BCAAA4',
+                        '#D7CCC8'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: activityData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#4A4A4A',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#4E342E',
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    }
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
