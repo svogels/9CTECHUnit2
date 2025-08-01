@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year 9 Game Design Lesson 3: Drawing & Player Movement (with Adjustments)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; padding: 20px 0; border-bottom: 3px solid #3498db; margin-bottom: 30px; }
+        h2 { color: #34495e; margin-top: 30px; margin-bottom: 15px; padding: 10px; background-color: #ecf0f1; border-left: 5px solid #3498db; }
+        h3 { color: #7f8c8d; margin-top: 20px; margin-bottom: 10px; }
+        .section { margin-bottom: 30px; padding: 20px; background-color: #fafafa; border-radius: 8px; }
+        .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .overview-item { background-color: #e8f4f8; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; }
+        .learning-intentions, .success-criteria { background-color: #e8f8f5; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #27ae60; }
+        .activity-box { background-color: #fef9e7; padding: 20px; margin: 20px 0; border-radius: 8px; border: 2px solid #f39c12; }
+        .code-demo { background-color: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto; }
+        .code-demo pre { margin: 0; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.5; }
+        .checkpoint { background-color: #d5f4e6; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #27ae60; }
+        .challenge-level { padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .level-1 { background-color: #d4edda; border-left: 4px solid #28a745; }
+        .level-2 { background-color: #fff3cd; border-left: 4px solid #ffc107; }
+        .level-3 { background-color: #f8d7da; border-left: 4px solid #dc3545; }
+        .resource-links { background-color: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .resource-links a { color: #1976d2; text-decoration: none; display: block; padding: 5px 0; }
+        .resource-links a:hover { text-decoration: underline; }
+        .exit-ticket { background-color: #f3e5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .worksheet { background-color: white; border: 2px solid #333; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .worksheet h4 { color: #2c3e50; margin-bottom: 10px; }
+        .worksheet input[type="checkbox"] { margin-right: 10px; }
+        .coordinate-demo { text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 8px; margin: 20px 0; }
+        canvas { border: 2px solid #333; cursor: crosshair; display: block; margin: 20px auto; background-color: white; }
+        .teacher-notes { background-color: #ffeaa7; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px dashed #fdcb6e; }
+        .time-marker { display: inline-block; background-color: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 14px; margin-right: 10px; }
+        ul { margin-left: 20px; margin-top: 10px; }
+        li { margin-bottom: 5px; }
+        .highlight { background-color: #fff176; padding: 2px 4px; border-radius: 3px; }
+        .button { display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }
+        .button:hover { background-color: #2980b9; }
+        
+        /* Styles for Adjustment Accordion */
+        .adjustment-accordion { background-color: #fffbeB; border: 2px solid #FBBF24; border-radius: 8px; margin-bottom: 30px; }
+        .adjustment-accordion h2 { background-color: #FBBF24; color: #78350F; border-left: none; text-align: center; }
+        .accordion-item { border-bottom: 1px solid #FDE68A; }
+        .accordion-item:last-child { border-bottom: none; }
+        .accordion-button { width: 100%; background-color: #FFFBEB; border: none; text-align: left; padding: 15px 20px; font-size: 18px; font-weight: bold; color: #92400E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .accordion-button:hover { background-color: #FEF3C7; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: #FFFCF5; }
+        .accordion-content-inner { padding: 15px 20px; }
+        .accordion-content-inner h4 { color: #B45309; margin-top: 10px; border-bottom: 2px solid #FCD34D; padding-bottom: 5px; }
+        .accordion-content-inner ul { list-style-type: disc; margin-left: 20px; }
+        .accordion-button .arrow { transition: transform 0.3s ease-out; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Year 9 Game Design Lesson 3: Drawing & Player Movement</h1>
+
+        <!-- INDIVIDUAL ADJUSTMENTS SECTION -->
+        <div class="adjustment-accordion">
+            <h2>Individual Adjustments for Diverse Learners</h2>
+            <div id="student-adjustments">
+                <!-- Accordion items will be injected here by JavaScript -->
+            </div>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-item"><strong>Duration:</strong> 100 minutes</div>
+            <div class="overview-item"><strong>Year Level:</strong> Year 9</div>
+            <div class="overview-item"><strong>Topic:</strong> Drawing Shapes & Player Movement</div>
+            <div class="overview-item"><strong>Focus Game:</strong> Space Invaders</div>
+        </div>
+
+        <div class="learning-intentions">
+            <h3>Learning Intentions</h3>
+            <p>Students will:</p>
+            <ul>
+                <li>Draw basic shapes on the screen using Pygame</li>
+                <li>Handle keyboard input for player movement</li>
+                <li>Understand the coordinate system in game development</li>
+                <li>Control a player object using keyboard inputs</li>
+            </ul>
+        </div>
+
+        <div class="success-criteria">
+            <h3>Success Criteria</h3>
+            <p>Students can:</p>
+            <ul>
+                <li>Use Pygame functions to draw a rectangle</li>
+                <li>Write conditional statements to detect key presses</li>
+                <li>Update player object's coordinates to create movement</li>
+                <li>Explain how movement constraints work in arcade games</li>
+            </ul>
+        </div>
+
+        <h2><span class="time-marker">10 mins</span>1. Review & Warm-up</h2>
+        <div class="section">
+            <h3>Quick Code Review Activity</h3>
+            <p>Students open their previous lesson's code and complete this checklist:</p>
+            <div class="code-demo">
+                <pre># CHECKLIST - Can you identify these parts in your code?
+# □ Import statements (pygame, sys)
+# □ Game window initialization
+# □ Main game loop
+# □ Event handling section
+# □ Display update (flip)
+# □ FPS control (clock.tick)</pre>
+            </div>
+            <p><strong>Pair & Share:</strong> Students explain to their partner what <code>pygame.display.flip()</code> does (from exit ticket)</p>
+            <p><strong>Resource:</strong> <a href="https://www.pygame.org/docs/ref/pygame.html" target="_blank">Pygame Quick Reference</a></p>
+        </div>
+
+        <h2><span class="time-marker">15 mins</span>2. Arcade Hook: Space Invaders Movement Analysis</h2>
+        <div class="section">
+            <div class="activity-box">
+                <h3>Activity: Movement Deconstruction</h3>
+                <p>Students play Space Invaders focusing specifically on the player ship:</p>
+                <p><a href="https://freeinvaders.org/" target="_blank" class="button">Play Space Invaders</a></p>
+            </div>
+            <div class="worksheet">
+                <h3>Space Invaders Movement Analysis Worksheet</h3>
+                <h4>INPUT (What controls movement?)</h4>
+                <label><input type="checkbox"> Left arrow key → Ship moves left</label><br>
+                <label><input type="checkbox"> Right arrow key → Ship moves right</label><br>
+                <label><input type="checkbox"> Spacebar → Fire bullet</label><br>
+                <label><input type="checkbox"> Other: _________________</label>
+                <h4>PROCESS (How does the game handle movement?)</h4>
+                <ul>
+                    <li><strong>Movement Speed:</strong> Is it constant or variable? _________________</li>
+                    <li><strong>Boundary Detection:</strong> What happens at screen edges? _________________</li>
+                    <li><strong>Smooth Movement:</strong> Does the ship move in steps or smoothly? _________________</li>
+                    <li><strong>Multiple Keys:</strong> Can you press left and right together? What happens? _________________</li>
+                </ul>
+                <h4>OUTPUT (What do you see?)</h4>
+                <ul>
+                    <li><strong>Visual Feedback:</strong> How does the ship show movement? _________________</li>
+                    <li><strong>Position Updates:</strong> How quickly does the screen refresh? _________________</li>
+                    <li><strong>Movement Constraints:</strong> Where CAN'T the ship go? _________________</li>
+                </ul>
+                <h4>Key Observations:</h4>
+                <ol>
+                    <li>The ship can only move horizontally (left/right)</li>
+                    <li>The ship stops at screen boundaries</li>
+                    <li>Movement is immediate when key is pressed</li>
+                    <li>Only one direction at a time is possible</li>
+                </ol>
+                <h4>Think About:</h4>
+                <ul>
+                    <li>Why do you think the ship can't move up/down?</li>
+                    <li>How would you code these movement constraints?</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2><span class="time-marker">10 mins</span>3. Understanding Pygame Coordinates</h2>
+        <div class="section">
+            <h3>Interactive Demonstration: The Coordinate System</h3>
+            <div class="coordinate-demo">
+                <p>In Pygame (and most computer graphics):</p>
+                <ul style="list-style: none; text-align: left; display: inline-block;">
+                    <li><span class="highlight">(0, 0)</span> is at the TOP-LEFT corner</li>
+                    <li><span class="highlight">X increases →</span> as you move RIGHT</li>
+                    <li><span class="highlight">Y increases ↓</span> as you move DOWN</li>
+                </ul>
+                <canvas id="coordCanvas" width="600" height="400"></canvas>
+                <p>Mouse Position: <span id="coords" class="highlight">(0, 0)</span></p>
+                <p>Click to place a rectangle at that position!</p>
+            </div>
+            <p><strong>Key Concept:</strong> Think of the screen as graph paper turned upside down!</p>
+        </div>
+
+        <h2><span class="time-marker">20 mins</span>4. I Do: Teacher Demonstration</h2>
+        <div class="section">
+            <h3>Live Coding Demo: Drawing and Moving a Rectangle</h3>
+            <p>Teacher demonstrates while explaining each line:</p>
+            <div class="code-demo">
+                <pre>import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+FPS = 60
+
+# Colors (R, G, B)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+
+# Set up the display
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Drawing and Movement Demo")
+
+# Player variables
+player_x = 400
+player_y = 500
+player_width = 50
+player_height = 30
+player_speed = 5
+
+# Game loop
+running = True
+clock = pygame.time.Clock()
+
+while running:
+    # 1. HANDLE EVENTS (INPUT)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    
+    # 2. HANDLE CONTINUOUS KEYBOARD INPUT
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT]:
+        player_x -= player_speed
+    if keys[pygame.K_RIGHT]:
+        player_x += player_speed
+
+    # Boundary check
+    if player_x < 0:
+        player_x = 0
+    if player_x > WINDOW_WIDTH - player_width:
+        player_x = WINDOW_WIDTH - player_width
+    
+    # 3. DRAW EVERYTHING (OUTPUT)
+    screen.fill(BLACK)
+    pygame.draw.rect(screen, GREEN, (player_x, player_y, player_width, player_height))
+    
+    # Update display
+    pygame.display.flip()
+    clock.tick(FPS)
+
+# Clean up
+pygame.quit()
+sys.exit()</pre>
+            </div>
+            <h3>Key Teaching Points:</h3>
+            <ol>
+                <li><strong>Drawing shapes:</strong> <code>pygame.draw.rect(surface, color, (x, y, width, height))</code></li>
+                <li><strong>Keyboard input:</strong> <code>pygame.key.get_pressed()</code> for smooth movement.</li>
+                <li><strong>Boundary detection:</strong> Using if statements to keep player on screen.</li>
+            </ol>
+        </div>
+
+        <h2><span class="time-marker">25 mins</span>5. We Do: Guided Practice</h2>
+        <div class="section">
+            <h3>Together, we'll build a rectangle that moves left and right:</h3>
+            <p>Students type along with teacher, pausing at checkpoints:</p>
+            <div class="checkpoint">
+                <h4>✓ Checkpoint 1: Basic Rectangle</h4>
+                <p>Draw a static rectangle. Does it appear?</p>
+            </div>
+            <div class="checkpoint">
+                <h4>✓ Checkpoint 2: Add Variables</h4>
+                <p>Replace fixed numbers with variables for x, y, width, height. Does it still appear?</p>
+            </div>
+            <div class="checkpoint">
+                <h4>✓ Checkpoint 3: Keyboard Detection</h4>
+                <p>Add the logic for left/right key presses to change the player_x variable. Does it move?</p>
+            </div>
+            <div class="checkpoint">
+                <h4>✓ Checkpoint 4: Boundaries</h4>
+                <p>Add the boundary checks. Does it stop at the edges?</p>
+            </div>
+        </div>
+
+        <h2><span class="time-marker">25 mins</span>6. You Do: Independent Challenge</h2>
+        <div class="section">
+            <h3>Player Movement Challenge Tasks:</h3>
+            <div class="challenge-level level-1">
+                <h4>🟢 Level 1: Basic 4-Direction Movement (All students)</h4>
+                <p>Add vertical movement (UP/DOWN or W/S keys) and screen boundaries.</p>
+            </div>
+            <div class="challenge-level level-2">
+                <h4>🟡 Level 2: Enhanced Movement (Most students)</h4>
+                <p>Add diagonal movement and a "boost" key (e.g., SHIFT to move faster).</p>
+            </div>
+            <div class="challenge-level level-3">
+                <h4>🔴 Level 3: Advanced Features (Extension)</h4>
+                <p>Implement smooth acceleration/deceleration or mouse control.</p>
+            </div>
+        </div>
+
+        <h2><span class="time-marker">5 mins</span>7. Portfolio Connection & Exit Ticket</h2>
+        <div class="section">
+            <h3>Portfolio Documentation</h3>
+            <p>Document your progress: take a screenshot of your moving rectangle and the code for boundary detection. Write a brief explanation of the INPUT-PROCESS-OUTPUT for your player movement.</p>
+            <div class="exit-ticket">
+                <h3>Exit Ticket</h3>
+                <p>Answer the questions on drawing, coordinates, and problem-solving to check your understanding.</p>
+            </div>
+        </div>
+        
+        <h2>Differentiation Strategies</h2>
+        <div class="section">
+            <p><strong>Note:</strong> Detailed, specific adjustments for students with IEPs are located in the "Individual Adjustments" section at the top of this lesson plan.</p>
+            <h3>For Students Needing Support:</h3>
+            <ul>
+                <li>Provide partially completed code with comments.</li>
+                <li>Focus on horizontal movement only.</li>
+                <li>Use pair programming.</li>
+            </ul>
+            <h3>For Advanced Students:</h3>
+            <ul>
+                <li>Implement advanced movement features from Level 3.</li>
+                <li>Research sprite classes for next lesson.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Data for student adjustments
+        const studentAdjustments = [
+            {
+                name: "Alexia Leonardo",
+                adjustments: `
+                    <h4>Core Principles: Explicit Instruction, Scaffolding, Sensory-Awareness.</h4>
+                    <ul>
+                        <li><strong>Environment:</strong> Work in a quiet space, use noise-cancelling headphones if preferred. Use VS Code's "Zen Mode" to reduce visual clutter.</li>
+                        <li><strong>Instruction:</strong> Use the Concrete-Representational-Abstract (CRA) method. Start with physical objects before showing code.</li>
+                        <li><strong>Pacing:</strong> Frequent, scheduled check-ins (e.g., after every 2-3 lines of new code). Use simple, direct questions.</li>
+                    </ul>
+                    <h4>Activity-Specific Adjustments:</h4>
+                    <ul>
+                        <li><strong>Warm-up:</strong> Provide a pre-printed checklist with pictures/icons next to the text. The teacher or a partner can help her locate the code sections.</li>
+                        <li><strong>Arcade Hook:</strong> Focus on one specific question on the worksheet, e.g., "What key moves the ship left?". The teacher can scribe her answer.</li>
+                        <li><strong>Coordinates Demo:</strong> Use a physical grid (e.g., a large checkerboard) and a laminated spaceship cutout alongside the digital demo. Guide her hand to move the object to coordinates you call out before showing it on screen.</li>
+                        <li><strong>I Do / We Do / You Do:</strong> Provide the <strong>complete, functional code file</strong> from the start. Her task is not to write code, but to <strong>modify</strong> it. Frame it as an experiment: "The code says 'player_speed = 5'. Let's change this number to 10 and see what happens." Her "You Do" task is to successfully change 1-2 pre-identified values and describe the result.</li>
+                        <li><strong>Exit Ticket:</strong> Administer orally, 1-on-1. Simplify questions and use visual aids. For example, for the coordinate question, show arrows pointing left and right.</li>
+                    </ul>`
+            },
+            {
+                name: "Stephen Liakos",
+                adjustments: `
+                    <h4>Core Principles: "Errorless" Learning, Concrete-Representational-Abstract (CRA), Instructor as "Reader/Interpreter".</h4>
+                    <ul>
+                        <li><strong>Instructional Method:</strong> All instruction must be 1-on-1 and explicit. The instructor must read all text, code, and comments aloud, explaining the purpose of each line simply.</li>
+                        <li><strong>Cognitive Load:</strong> Avoid all complex diagrams. The project must be broken down into the smallest possible steps (task analysis).</li>
+                    </ul>
+                    <h4>Activity-Specific Adjustments:</h4>
+                    <ul>
+                        <li><strong>Arcade Hook:</strong> The instructor plays the game while Stephen watches. The instructor verbalizes the actions: "I am pressing the right arrow, the ship moves right." The worksheet is completed orally with the instructor scribing the answers.</li>
+                        <li><strong>Coordinates Demo:</strong> <strong>Crucially, this must start with a physical activity.</strong> Use a large grid taped on the floor or a table. Stephen physically moves an object (e.g., a toy car) to different spots. "Move to x=3, y=5." Only after this physical grounding, show the on-screen demo and explain, "The computer does what you just did."</li>
+                        <li><strong>I Do / We Do / You Do:</strong> Provide a pre-written, <strong>100% functional, "errorless" code template.</strong> The goal is comprehension, not creation. The "We Do" involves the instructor pointing to a line and explaining its job. The "You Do" is to change a single, clearly marked value (e.g., a color variable like \`GREEN\`) and run the program to see the effect. The Level 1 challenge is the only goal.</li>
+                        <li><strong>Exit Ticket:</strong> Administered 1-on-1, orally. Ask only the most concrete questions, like the direction of movement. Avoid abstract problem-solving questions.</li>
+                    </ul>`
+            },
+            {
+                name: "Glenden & Ishavdeep",
+                adjustments: `
+                    <h4>Core Principles: Instructor as "Reader/Interpreter", Dual Coding (Visual + Auditory).</h4>
+                    <ul>
+                        <li><strong>Accessibility:</strong> The instructor must read all significant text, code, and comments aloud. Use a text-to-speech extension in VS Code as a supplementary tool.</li>
+                        <li><strong>Instruction:</strong> Emphasize the direct link between a line of code and the visual result on the screen. "When I type this line, watch what happens to the rectangle."</li>
+                    </ul>
+                    <h4>Activity-Specific Adjustments:</h4>
+                    <ul>
+                        <li><strong>Warm-up:</strong> Read the checklist items aloud to the students.</li>
+                        <li><strong>Arcade Hook:</strong> The worksheet can be completed in a small group led by the teacher, who reads the prompts aloud and facilitates discussion.</li>
+                        <li><strong>I Do / We Do / You Do:</strong> Provide the code with extensive comments, but understand the students will not comprehend them by reading alone. The teacher must narrate the coding process. The "You Do" challenge (Level 1) should be scaffolded with a code template that has comments like \`# ADD CODE FOR UP MOVEMENT HERE\`.</li>
+                        <li><strong>Exit Ticket:</strong> Read all questions and options aloud to the students. Check for understanding of the questions before they answer.</li>
+                    </ul>`
+            },
+            {
+                name: "Jack Jones",
+                adjustments: `
+                    <h4>Core Principles: Relationship-First, Foster Autonomy with Choices, Gamify Learning.</h4>
+                    <ul>
+                        <li><strong>Environment:</strong> Use a dyslexia-friendly font (like OpenDyslexic) in VS Code. Use VS Code's "Zen Mode" to minimize distractions.</li>
+                        <li><strong>Interaction:</strong> Avoid direct commands. Offer choices to give a sense of control: "For the player, should we use a green square or a blue one?" "Do you want to code the left movement first, or the right?" Frame tasks as "missions" or "challenges."</li>
+                    </ul>
+                    <h4>Activity-Specific Adjustments:</h4>
+                    <ul>
+                        <li><strong>Warm-up & Hook:</strong> Keep the intro brief. Focus on the game-playing aspect. Allow him to choose which classic game to analyze.</li>
+                        <li><strong>I Do / We Do:</strong> Keep the teacher demo short and high-energy. During "We Do," give Jack control of the keyboard for the guided parts to maintain engagement.</li>
+                        <li><strong>You Do:</strong> Frame the challenges as a competition. "Challenge: Can you get 4-way movement working in the next 10 minutes?" Use a timer for short work bursts.</li>
+                        <li><strong>Portfolio:</strong> Break documentation into a small, timed task. "Okay, mission for the next 5 minutes: get a screenshot of your game running."</li>
+                        <li><strong>Exit Ticket:</strong> Tackle one question at a time. "Let's just knock out question 1."</li>
+                    </ul>`
+            },
+            {
+                name: "Leo Ruffin",
+                adjustments: `
+                    <h4>Core Principles: High-Interest Tasks, "Chunking" with Timers (Pomodoro), Dual Coding.</h4>
+                    <ul>
+                        <li><strong>Pacing:</strong> Structure the lesson in short, timed intervals. "Okay, we're going on a 15-minute coding sprint to get the rectangle on screen. Then we'll take a 3-minute break." Use a visible timer.</li>
+                        <li><strong>Motivation:</strong> Connect tasks to his interest in drawing. "As we code the player, think about what kind of cool ship you could draw to replace this rectangle later."</li>
+                    </ul>
+                    <h4>Activity-Specific Adjustments:</h4>
+                    <ul>
+                        <li><strong>Arcade Hook:</strong> While playing, prompt him to notice the art style. "Look at how simple the graphics are. You could definitely draw something like that."</li>
+                        <li><strong>I Do / We Do:</strong> Emphasize the immediate visual feedback. "Watch this - as soon as I finish typing this line, a green box will pop up on our screen."</li>
+                        <li><strong>You Do:</strong> Give him creative agency. Encourage him to experiment with the Level 2 challenges that have a visual output, like changing the rectangle's color when it moves. Let him choose the colors and speeds.</li>
+                        <li><strong>Portfolio:</strong> Assign a specific, small documentation task for one work-sprint. "In this 15-minute block, our only goal is to get the code snippet for boundary detection into your portfolio."</li>
+                    </ul>`
+            }
+        ];
+
+        // Function to build and inject the accordion
+        function buildAccordion() {
+            const container = document.getElementById('student-adjustments');
+            let html = '';
+            studentAdjustments.forEach((student, index) => {
+                html += `
+                    <div class="accordion-item">
+                        <button class="accordion-button" data-target="content-${index}">
+                            <span>${student.name}</span>
+                            <span class="arrow">&#9662;</span>
+                        </button>
+                        <div id="content-${index}" class="accordion-content">
+                            <div class="accordion-content-inner">
+                                ${student.adjustments}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // Function to handle accordion clicks
+        function setupAccordionListeners() {
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = document.getElementById(button.dataset.target);
+                    const arrow = button.querySelector('.arrow');
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    // Close all other accordions
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                    document.querySelectorAll('.arrow').forEach(a => a.style.transform = 'rotate(0deg)');
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        }
+        
+        // Initialize the accordion on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            buildAccordion();
+            setupAccordionListeners();
+        });
+
+
+        // Coordinate system interactive demo
+        const canvas = document.getElementById('coordCanvas');
+        const ctx = canvas.getContext('2d');
+        const coordsDisplay = document.getElementById('coords');
+        
+        function drawGrid() {
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= 600; x += 50) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 400); ctx.stroke();
+            }
+            for (let y = 0; y <= 400; y += 50) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(600, y); ctx.stroke();
+            }
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(600, 0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 400); ctx.stroke();
+            ctx.fillStyle = '#333'; ctx.font = '14px Arial';
+            ctx.fillText('(0,0)', 5, 15); ctx.fillText('X →', 570, 15); ctx.fillText('Y ↓', 5, 395);
+        }
+        
+        drawGrid();
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            coordsDisplay.textContent = `(${x}, ${y})`;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            ctx.clearRect(0, 0, 600, 400);
+            drawGrid();
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.fillRect(x - 25, y - 25, 50, 50);
+            ctx.fillStyle = '#000'; ctx.font = 'bold 12px Arial';
+            ctx.fillText(`(${x}, ${y})`, x + 30, y);
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            coordsDisplay.textContent = '(Move mouse over canvas)';
+        });
+    </script>
+</body>
+</html>
+
