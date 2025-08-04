@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Differentiated Learning Activities: Game Design</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,12 +31,43 @@
         .timeline-item {
             cursor: grab;
             transition: all 0.2s ease;
+            position: relative; /* Added for tooltip positioning */
         }
         .timeline-item:active {
             cursor: grabbing;
             transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
             z-index: 10;
+        }
+        /* Tooltip styles */
+        .tooltip {
+            visibility: hidden;
+            width: 160px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 110%; /* Position above the item */
+            left: 50%;
+            margin-left: -80px; /* Center the tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .timeline-item:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* New styles for era title tooltips */
+        .era-title-container {
+            position: relative;
+            display: inline-block;
+        }
+        .era-title-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
         .drop-zone {
             border: 2px dashed #ced4da;
@@ -101,11 +133,16 @@
             <div id="activity-history">
                 <div id="history-instructions" class="bg-blue-50 p-4 rounded-lg mb-6">
                     <h2 class="text-xl font-bold text-blue-800">Activity: History of Games Timeline</h2>
-                    <p class="text-blue-700 mt-1">Drag and drop the game images into the correct era. Use the <span class="font-bold">Read Aloud</span> <span class="read-aloud-btn text-xs">🔊</span> button if you need help with the text.</p>
+                    <p class="text-blue-700 mt-1">Hover over an item or title to see its description. Drag and drop the game images into the correct era. Use the <span class="font-bold">Read Aloud</span> <span class="read-aloud-btn text-xs">🔊</span> button if you need help with the text.</p>
                 </div>
                 <div id="timeline-items-pool" class="flex flex-wrap justify-center gap-4 mb-8 p-4 bg-gray-100 rounded-lg"></div>
                 <div id="timeline" class="space-y-8"></div>
                 <div id="history-feedback" class="mt-6 text-center font-bold text-2xl h-8"></div>
+                 <div class="text-center mt-8 border-t pt-6">
+                    <button id="download-history-pdf" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Download History of Games as PDF
+                    </button>
+                </div>
             </div>
 
             <div id="activity-minecraft" class="hidden-by-default">
@@ -114,11 +151,17 @@
                     <p class="text-green-700 mt-1">Read the passages about Markus 'Notch' Persson. Use the <span class="font-bold">Read Aloud</span> <span class="read-aloud-btn text-xs">🔊</span> button for help, then answer the questions.</p>
                 </div>
                 <div id="minecraft-content" class="max-w-4xl mx-auto space-y-6"></div>
+                 <div class="text-center mt-8 border-t pt-6">
+                    <button id="download-minecraft-pdf" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Download Creator of Minecraft as PDF
+                    </button>
+                </div>
             </div>
         </main>
     </div>
 
     <script>
+        // --- DATA ---
         const historyData = [
             { id: 'item1', era: 'mainframe', title: 'Tennis for Two', content: 'One of the first electronic games, created on an oscilloscope.', img: 'https://placehold.co/100x100/4a90e2/ffffff?text=Tennis' },
             { id: 'item2', era: 'arcade', title: 'Pong', content: 'A smash hit arcade game that brought video games to the mainstream.', img: 'https://placehold.co/100x100/4a90e2/ffffff?text=Pong' },
@@ -142,18 +185,37 @@
             { type: 'question', question: "What is one practice Markus Persson used when developing Minecraft?", options: ["Writing a full plan before coding", "Coding a little bit and then testing if it's fun", "Only getting feedback from other professional developers"], answer: "Coding a little bit and then testing if it's fun" }
         ];
 
+        // --- DOM ELEMENTS ---
         const tabHistory = document.getElementById('tab-history');
         const tabMinecraft = document.getElementById('tab-minecraft');
         const activityHistory = document.getElementById('activity-history');
         const activityMinecraft = document.getElementById('activity-minecraft');
 
+        // --- SPEECH SYNTHESIS ---
         const synth = window.speechSynthesis;
         function speak(text) {
-            if (synth.speaking) synth.cancel();
+            if (synth.speaking) {
+                synth.cancel();
+            }
             const utterance = new SpeechSynthesisUtterance(text);
             synth.speak(utterance);
         }
+        
+        // --- PDF DOWNLOAD FUNCTION ---
+        function downloadPDF(elementId, filename) {
+            const element = document.getElementById(elementId);
+            const opt = {
+                margin:       0.5,
+                filename:     filename,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true }, // useCORS for external images
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            // Use the html2pdf library to generate the PDF
+            html2pdf().from(element).set(opt).save();
+        }
 
+        // --- RENDER FUNCTIONS ---
         function renderHistoryActivity() {
             const itemsPool = document.getElementById('timeline-items-pool');
             const timelineContainer = document.getElementById('timeline');
@@ -165,7 +227,10 @@
                 itemEl.dataset.era = item.era;
                 itemEl.draggable = true;
                 itemEl.className = 'timeline-item bg-white p-2 rounded-lg shadow flex items-center gap-3';
-                itemEl.innerHTML = `<img src="${item.img}" alt="${item.title}" class="w-12 h-12 rounded-md"><span class="font-semibold hidden">${item.title}</span>`;
+                itemEl.innerHTML = `
+                    <img src="${item.img}" alt="${item.title}" class="w-12 h-12 rounded-md">
+                    <span class="font-semibold">${item.title}</span>
+                    <div class="tooltip">${item.content}</div>`;
                 itemsPool.appendChild(itemEl);
             });
             timelineEras.forEach(era => {
@@ -173,12 +238,19 @@
                 eraEl.className = 'timeline-era pl-8 relative';
                 eraEl.innerHTML = `
                     <div class="absolute -left-2.5 top-0 w-5 h-5 bg-blue-500 rounded-full border-4 border-white"></div>
-                    <h3 class="text-lg font-bold text-gray-700">${era.title} <button class="read-aloud-btn" data-text="${era.title}">🔊</button></h3>
-                    <div class="drop-zone mt-2 p-4 rounded-lg min-h-[80px] w-full" data-era="${era.id}"></div>`;
+                    <div class="era-title-container">
+                        <h3 class="text-lg font-bold text-gray-700">${era.title} <button class="read-aloud-btn" data-text="${era.title}">🔊</button></h3>
+                        <div class="tooltip">${era.content}</div>
+                    </div>
+                    <div class="drop-zone mt-2 p-4 rounded-lg min-h-[100px] w-full" data-era="${era.id}"></div>`;
                 timelineContainer.appendChild(eraEl);
             });
             addDragAndDropListeners();
             addReadAloudListeners();
+            // Add listener for the new PDF button
+            document.getElementById('download-history-pdf').addEventListener('click', () => {
+                downloadPDF('activity-history', 'history-of-games-completed.pdf');
+            });
         }
 
         function renderMinecraftActivity() {
@@ -198,21 +270,28 @@
             });
             addMinecraftListeners();
             addReadAloudListeners();
+            // Add listener for the new PDF button
+            document.getElementById('download-minecraft-pdf').addEventListener('click', () => {
+                downloadPDF('activity-minecraft', 'creator-of-minecraft-completed.pdf');
+            });
         }
 
+        // --- EVENT LISTENERS & LOGIC ---
         function addDragAndDropListeners() {
             const items = document.querySelectorAll('.timeline-item');
             const dropZones = document.querySelectorAll('.drop-zone');
+            
             items.forEach(item => {
                 item.addEventListener('dragstart', e => {
-                    e.dataTransfer.setData('text/plain', e.target.id);
+                    e.dataTransfer.setData('text/plain', e.target.closest('.timeline-item').id);
                     setTimeout(() => item.classList.add('opacity-50'), 0);
                 });
                 item.addEventListener('dragend', () => item.classList.remove('opacity-50'));
             });
+
             dropZones.forEach(zone => {
                 zone.addEventListener('dragover', e => {
-                    e.preventDefault();
+                    e.preventDefault(); 
                     zone.classList.add('over');
                 });
                 zone.addEventListener('dragleave', () => zone.classList.remove('over'));
@@ -222,9 +301,10 @@
                     const id = e.dataTransfer.getData('text/plain');
                     const draggable = document.getElementById(id);
                     const feedbackEl = document.getElementById('history-feedback');
+                    
                     if (draggable && draggable.dataset.era === zone.dataset.era) {
-                        zone.appendChild(draggable);
-                        draggable.draggable = false;
+                        zone.appendChild(draggable); 
+                        draggable.draggable = false; 
                         draggable.style.cursor = 'default';
                         feedbackEl.textContent = 'Correct!';
                         feedbackEl.className = 'mt-6 text-center font-bold text-2xl h-8 text-green-500';
@@ -244,14 +324,16 @@
                     const correctAnswer = e.currentTarget.dataset.answer;
                     const parent = e.currentTarget.parentElement;
                     const feedbackEl = parent.nextElementSibling;
+                    
                     parent.querySelectorAll('.mcq-option').forEach(btn => btn.disabled = true);
+
                     if (selectedOption === correctAnswer) {
                         e.currentTarget.classList.add('correct');
                         feedbackEl.textContent = 'Correct!';
                         feedbackEl.classList.add('text-green-600');
                     } else {
                         e.currentTarget.classList.add('incorrect');
-                        feedbackEl.textContent = `Not quite. The correct answer was ${correctAnswer}.`;
+                        feedbackEl.textContent = `Not quite. The correct answer was: ${correctAnswer}.`;
                         feedbackEl.classList.add('text-red-600');
                     }
                 });
@@ -261,12 +343,13 @@
         function addReadAloudListeners() {
             document.querySelectorAll('.read-aloud-btn').forEach(btn => {
                 btn.addEventListener('click', e => {
-                    e.stopPropagation();
+                    e.stopPropagation(); 
                     speak(e.currentTarget.dataset.text);
                 });
             });
         }
 
+        // --- TAB SWITCHING ---
         tabHistory.addEventListener('click', () => {
             tabHistory.classList.add('active');
             tabMinecraft.classList.remove('active');
@@ -283,8 +366,8 @@
             renderMinecraftActivity();
         });
 
+        // --- INITIAL RENDER ---
         renderHistoryActivity();
     </script>
 </body>
 </html>
-
