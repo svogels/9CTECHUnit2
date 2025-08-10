@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Game Analysis Worksheet</title>
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #667eea;
+            margin: 0;
+        }
+        .worksheet-section {
+            margin-bottom: 25px;
+        }
+        .worksheet-section h2 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            .button-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="worksheet">
+        <div class="header">
+            <h1>Arcade Game: Quick Analysis</h1>
+        </div>
+
+        <div class="worksheet-section">
+            <label for="game-name">Game Name:</label>
+            <input type="text" id="game-name" name="game-name" placeholder="e.g., Pac-Man">
+        </div>
+
+        <div class="worksheet-section">
+            <h2>Main Objective</h2>
+            <label for="objective">What is the primary goal of the game?</label>
+            <textarea id="objective" name="objective" placeholder="Describe what the player is trying to achieve..."></textarea>
+        </div>
+
+        <div class="worksheet-section">
+            <h2>Player Controls (INPUT)</h2>
+            <label for="controls">How does the player interact with the game?</label>
+            <textarea id="controls" name="controls" placeholder="List the keys or buttons used and what they do..."></textarea>
+        </div>
+
+        <div class="worksheet-section">
+            <h2>Game Rules (PROCESS)</h2>
+            <label for="rules">What are the key rules or mechanics?</label>
+            <textarea id="rules" name="rules" placeholder="Describe how the game works, scoring, win/loss conditions, etc..."></textarea>
+        </div>
+
+        <div class="worksheet-section">
+            <h2>Visual/Audio Feedback (OUTPUT)</h2>
+            <label for="feedback">How does the game show you what's happening?</label>
+            <textarea id="feedback" name="feedback" placeholder="Describe the sounds, animations, score updates, etc..."></textarea>
+        </div>
+
+        <div class="button-container">
+            <button class="download-btn" onclick="downloadPDF()">Download as PDF</button>
+        </div>
+    </div>
+
+    <script>
+        // This function enables the PDF download functionality.
+        function downloadPDF() {
+            // We need to tell the browser what jspdf is
+            const { jsPDF } = window.jspdf;
+            
+            // Get the worksheet element
+            const worksheetElement = document.getElementById('worksheet');
+            
+            // Use html2canvas to render the element as an image
+            html2canvas(worksheetElement, {
+                scale: 2 // Increase scale for better quality
+            }).then(canvas => {
+                // Create a new PDF document
+                const pdf = new jsPDF({
+                    orientation: 'p', // portrait
+                    unit: 'mm', // millimeters
+                    format: 'a4' // A4 size
+                });
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                const ratio = canvasWidth / canvasHeight;
+                const imgWidth = pdfWidth - 20; // with some margin
+                const imgHeight = imgWidth / ratio;
+                
+                // Add the canvas image to the PDF
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, imgWidth, imgHeight);
+                
+                // Save the PDF
+                pdf.save('game-analysis-worksheet.pdf');
+            });
+        }
+    </script>
+</body>
+</html>

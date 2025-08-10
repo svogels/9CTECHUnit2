@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Script: Flowchart Demonstration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #764ba2;
+            margin-top: 20px;
+        }
+        .script-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .dialogue {
+            background: #e8f5e9;
+            padding: 20px;
+            border-left: 5px solid #4caf50;
+            margin: 20px 0;
+            font-style: italic;
+            font-size: 1.1em;
+            border-radius: 0 8px 8px 0;
+        }
+        .action {
+            background: #fff3e0;
+            padding: 15px;
+            border-left: 5px solid #ff9800;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .shape-box {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            border: 2px solid #333;
+            text-align: center;
+            font-weight: bold;
+        }
+        .oval {
+            border-radius: 50%;
+            padding: 15px 30px;
+            background: #e3f2fd;
+        }
+        .rectangle {
+            background: #f3e5f5;
+        }
+        .diamond {
+            background: #fff9c4;
+            transform: rotate(45deg);
+            margin: 30px;
+            width: 120px;
+            height: 120px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .diamond-text {
+            transform: rotate(-45deg);
+        }
+        .parallelogram {
+            background: #ffecb3;
+            transform: skew(-20deg);
+        }
+        .parallelogram-text {
+            display: inline-block;
+            transform: skew(20deg);
+        }
+        .flowchart-visual {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .emphasis {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        ul { margin-left: 20px; }
+        li { margin-bottom: 10px; }
+        @media print {
+            body { background: white; margin: 0; }
+            .header { background: none; color: black; border-bottom: 2px solid black; border-radius: 0; }
+            .script-section { box-shadow: none; border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Teacher Script: Creating a Flowchart</h1>
+        <p style="margin-top: 10px;">Part 2 Demonstration (10 minutes)</p>
+    </div>
+    <div class="script-section">
+        <h2>Introduction to Flowchart Shapes</h2>
+        <div class="dialogue">"Right everyone, now we're going to learn about flowcharts - these are like maps that show how our game thinks and makes decisions. Before we start drawing, let me show you the special shapes we use in flowcharts. Each shape has a specific meaning - it's like a secret code that all programmers understand."</div>
+        <div class="action"><strong>[Draw on board or display on screen]</strong></div>
+        <h3>1. Start/End Points - OVAL</h3>
+        <div class="flowchart-visual"><span class="shape-box oval">START</span><span class="shape-box oval">END</span></div>
+        <div class="dialogue">"First, we have the <span class="emphasis">OVAL</span>. This is always used for START and END points. Think of it like the power button on your game console - it turns things on and off. Every flowchart begins with START in an oval and finishes with END in an oval."</div>
+        <h3>2. Process/Action - RECTANGLE</h3>
+        <div class="flowchart-visual"><span class="shape-box rectangle">Move Player Left</span></div>
+        <div class="dialogue">"Next, we have the <span class="emphasis">RECTANGLE</span>. This is our action box. Whenever the computer needs to DO something, we put it in a rectangle. For example: 'Move player left', 'Add 10 points to score', or 'Display game over screen'."</div>
+        <h3>3. Decision - DIAMOND</h3>
+        <div class="flowchart-visual"><div class="shape-box diamond"><span class="diamond-text">Spacebar?</span></div></div>
+        <div class="dialogue">"Now, here's the most important one for games - the <span class="emphasis">DIAMOND</span>. This is our decision maker. Whenever the game needs to ask a question that has a YES or NO answer, we use a diamond. Questions like 'Did the player press spacebar?', 'Did the bullet hit an enemy?', or 'Is the score greater than 100?' The diamond always has two paths coming out of it - one for YES and one for NO."</div>
+        <h3>4. Input/Output - PARALLELOGRAM</h3>
+        <div class="flowchart-visual"><span class="shape-box parallelogram"><span class="parallelogram-text">Get Keyboard Input</span></span></div>
+        <div class="dialogue">"We also have the <span class="emphasis">PARALLELOGRAM</span>. This represents INPUT or OUTPUT. When the player types something, that's input. When the game shows something on screen, that's output. For our simple games, we often just use rectangles for these actions too, and that's okay."</div>
+        <h3>5. Flow Arrows</h3>
+        <div class="dialogue">"Finally, we connect everything with <span class="emphasis">ARROWS</span>. These show the flow - the order things happen in. Think of arrows as the roads that connect different parts of our game's logic."</div>
+    </div>
+    <div class="script-section">
+        <h2>Space Invaders Flowchart Example</h2>
+        <div class="dialogue">"Let me show you how this works with a simple version of Space Invaders:"</div>
+        <div class="action"><strong>[Begin drawing flowchart on board/screen]</strong></div>
+        <h3>Step-by-Step Construction:</h3>
+        <div class="dialogue">
+            "1. We start with an OVAL: <span class="emphasis">'START'</span><br>
+            2. Then a RECTANGLE for our first action: <span class="emphasis">'Load game graphics'</span><br>
+            3. Another RECTANGLE: <span class="emphasis">'Create player ship at bottom'</span><br>
+            4. Another RECTANGLE: <span class="emphasis">'Create enemy grid at top'</span><br>
+            5. Now we enter our game loop. It starts with a DIAMOND - a decision: <span class="emphasis">'Is Game Over?'</span>"
+        </div>
+        <div class="action"><strong>[Draw arrow labeled "NO" to continue the loop, and "YES" to the end]</strong></div>
+        <div class="dialogue">
+            "   - If NO, the game continues. We have a RECTANGLE: <span class="emphasis">'Check for player input'</span><br>
+            6. Another DIAMOND: <span class="emphasis">'Did player press left arrow?'</span><br>
+            - If YES (draw arrow): RECTANGLE <span class="emphasis">'Move ship left'</span><br>
+            7. Another DIAMOND: <span class="emphasis">'Did player press spacebar?'</span><br>
+            - If YES: RECTANGLE <span class="emphasis">'Fire bullet'</span><br>
+            8. RECTANGLE: <span class="emphasis">'Move all enemies'</span><br>
+            9. RECTANGLE: <span class="emphasis">'Move all bullets'</span><br>
+            10. DIAMOND: <span class="emphasis">'Did bullet hit enemy?'</span><br>
+            - If YES: RECTANGLE <span class="emphasis">'Remove enemy'</span> then <span class="emphasis">'Add to score'</span><br>
+            11. DIAMOND: <span class="emphasis">'Did enemy reach player?'</span><br>
+            - If YES: RECTANGLE <span class="emphasis">'Set Game Over to TRUE'</span><br>
+            12. Finally, an arrow loops from the last step back up to the 'Is Game Over?' diamond. This is the <span class="emphasis">GAME LOOP</span>.<br>
+            - If 'Is Game Over?' is YES: RECTANGLE <span class="emphasis">'Show Final Score'</span> then OVAL <span class="emphasis">'END'</span>"
+        </div>
+    </div>
+    <div class="script-section">
+        <h2>Key Teaching Points</h2>
+        <div class="dialogue">"See how the shapes tell us exactly what type of instruction each step is? The diamonds are where the game makes choices, and those choices change what happens next. That's what makes games interactive!"</div>
+        <h3>Reinforcement Questions:</h3>
+        <ul>
+            <li>"What shape would we use for 'Calculate final score'?" (Rectangle - it's an action)</li>
+            <li>"What shape for 'Is health zero?'" (Diamond - it's a yes/no question)</li>
+            <li>"What shape for 'Game Over'?" (Could be a rectangle for displaying the screen, or an oval for the final END point)</li>
+        </ul>
+        <h3>Common Student Mistakes to Address:</h3>
+        <ul>
+            <li>Using rectangles for decisions - remind them diamonds are for questions.</li>
+            <li>Forgetting to label arrows from diamonds with YES/NO.</li>
+            <li>Not including an END point or not having a loop.</li>
+            <li>Making the flowchart too complex initially - start simple!</li>
+        </ul>
+    </div>
+    <div class="script-section">
+        <h2>Visual Summary for Board/Screen</h2>
+        <div class="flowchart-visual">
+            <h3>Quick Reference:</h3>
+            <p><span class="shape-box oval">START/END</span> = Beginning and ending</p>
+            <p><span class="shape-box rectangle">ACTION</span> = Do something</p>
+            <p><div class="shape-box diamond"><span class="diamond-text">DECISION</span></div> = Yes/No question</p>
+            <p><span class="shape-box parallelogram"><span class="parallelogram-text">INPUT/OUTPUT</span></span> = Get info / Show info</p>
+            <p>→ ARROWS = Show the flow/order</p>
+        </div>
+    </div>
+</body>
+</html>
