@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag-and-Drop Flowchart Activity</title>
+    <style>
+        /* --- General Styles & Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+        
+        :root {
+            --primary-color: #005a9c;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --border-color: #adb5bd;
+            --background-light: #f0f2f5;
+            --background-white: #ffffff;
+            --text-color: #333;
+            --arrow-color: #555;
+            --shape-bg: #f8f9fa; /* Added a default shape background */
+        }
+
+        body {
+            font-family: 'Comic Neue', 'Segoe UI', cursive, sans-serif;
+            background-color: var(--background-light);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            user-select: none;
+        }
+
+        .activity-container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        /* --- Panels --- */
+        .flowchart-panel, .text-bank-panel {
+            background: var(--background-white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .text-bank-panel {
+            align-self: start;
+            position: sticky;
+            top: 20px;
+        }
+
+        .text-bank-panel h2 {
+            text-align: center;
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* --- Draggable Text Items --- */
+        .text-bank {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .draggable-text {
+            padding: 10px 15px;
+            background-color: #e9ecef;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            cursor: grab;
+            transition: background-color 0.2s, opacity 0.2s;
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .draggable-text.dragging {
+            opacity: 0.5;
+            background-color: #cfe2ff;
+        }
+
+        /* --- Flowchart Elements --- */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .shape {
+            box-sizing: border-box; /* Ensures padding is included in width/height */
+            padding: 12px 22px;
+            min-width: 260px;
+            min-height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 2px dashed #ccc;
+            background-color: var(--shape-bg); /* FIX: Added background color */
+            transition: background-color 0.2s, border-color 0.2s;
+            position: relative; /* Needed for child elements */
+        }
+
+        .shape.hover {
+            background-color: #d4edda;
+            border-color: var(--correct-color);
+        }
+        
+        .shape.correct {
+            border: 3px solid var(--correct-color);
+            background-color: #f0fff0;
+        }
+
+        .shape.incorrect {
+            border: 3px solid var(--incorrect-color);
+            background-color: #fff0f0;
+        }
+
+        /* When a text item is dropped, its own border is removed */
+        .shape .draggable-text {
+            border: none;
+            cursor: default;
+            background-color: transparent;
+            width: 100%;
+        }
+
+        /* --- Specific Shapes --- */
+        .oval { border-radius: 999px; }
+        .rectangle { border-radius: 8px; }
+
+        /* Diamond shape is now created with clip-path and has enough space for text */
+        .diamond {
+            width: 280px;
+            height: 140px;
+            padding: 20px; /* Gives text more room inside the diamond */
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .arrow {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--arrow-color);
+            line-height: 1;
+            position: relative;
+        }
+
+        /* --- Loop Container --- */
+        .loop-container {
+            border: 3px dashed #777;
+            border-radius: 15px;
+            padding: 20px 40px;
+            margin: 20px 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .loop-label {
+            position: absolute;
+            top: -15px;
+            background: var(--background-white);
+            padding: 0 10px;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: var(--arrow-color);
+        }
+        
+        /* --- Decision Block Layout --- */
+        /* This block is now a relative container for positioning the side path */
+        .decision-block {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        /* This container holds the "Yes" path elements */
+        .side-path {
+            position: absolute;
+            top: 70px; /* Aligns with the middle of the diamond */
+            left: calc(50% + 140px); /* Positioned to the right of the diamond */
+            transform: translateX(20px); /* Adds a small gap */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: auto;
+        }
+
+        /* Connector line from diamond to the side path */
+        .side-path::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 100%;
+            width: 40px; /* Length of the horizontal line */
+            height: 3px;
+            background-color: var(--arrow-color);
+        }
+
+        .path-label {
+            font-weight: 700;
+            background: white;
+            padding: 0 5px;
+            position: absolute;
+            color: var(--text-color);
+        }
+        
+        .yes-label {
+            top: -30px;
+            left: -25px;
+            color: var(--correct-color);
+        }
+        
+        .no-label {
+            position: absolute;
+            top: -15px; /* Position above the arrow */
+            left: 15px;
+            font-weight: 700;
+            background: var(--background-white);
+            padding: 0 5px;
+        }
+
+        /* --- Loop Connector Arrow --- */
+        .loop-connector-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .loop-connector {
+            width: 60%;
+            height: 40px;
+            border-bottom: 3px solid var(--arrow-color);
+            border-left: 3px solid var(--arrow-color);
+            border-radius: 0 0 0 20px;
+            position: relative;
+            margin-left: -30%; /* Shift to align with center */
+        }
+        .loop-connector::before {
+            content: '↑'; /* Arrowhead */
+            font-size: 2em;
+            color: var(--arrow-color);
+            position: absolute;
+            top: -55px;
+            left: -10px;
+        }
+        .loop-connector-text {
+            position: absolute;
+            bottom: -5px;
+            left: 5px;
+            background-color: var(--background-white);
+            padding: 0 10px;
+            font-weight: bold;
+        }
+
+        /* --- Buttons --- */
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .buttons button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-family: inherit;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.1s;
+        }
+        .buttons button:active {
+            transform: scale(0.98);
+        }
+
+        #check-btn {
+            background-color: var(--correct-color);
+            color: white;
+        }
+
+        #reset-btn {
+            background-color: var(--incorrect-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="activity-container">
+        <div class="flowchart-panel">
+            <div class="flowchart">
+                <!-- Start -->
+                <div class="shape oval drop-zone" data-id="1"></div>
+                <div class="arrow">↓</div>
+                <!-- Setup -->
+                <div class="shape rectangle drop-zone" data-id="2"></div>
+                <div class="arrow">↓</div>
+                <div class="shape rectangle drop-zone" data-id="3"></div>
+                <div class="arrow">↓</div>
+                
+                <!-- Game Loop -->
+                <div class="loop-container">
+                    <div class="loop-label">GAME LOOP</div>
+                    <div class="shape rectangle drop-zone" data-id="4"></div>
+                    <div class="arrow">↓</div>
+                    <div class="shape rectangle drop-zone" data-id="5"></div>
+                    <div class="arrow">↓</div>
+                    <div class="shape rectangle drop-zone" data-id="6"></div>
+                    <div class="arrow">↓</div>
+                    <div class="shape rectangle drop-zone" data-id="7"></div>
+                    <div class="arrow">↓</div>
+                    
+                    <!-- Decision 1: Enemy Hit? -->
+                    <div class="decision-block">
+                        <div class="shape diamond drop-zone" data-id="8"></div>
+                        <div class="side-path">
+                            <div class="path-label yes-label">Yes</div>
+                            <div class="shape rectangle drop-zone" data-id="9"></div>
+                            <div class="arrow">↓</div>
+                            <div class="shape rectangle drop-zone" data-id="10"></div>
+                        </div>
+                    </div>
+                    <div class="arrow"><span class="no-label">No</span>↓</div>
+
+                    <!-- Decision 2: All Enemies Gone? -->
+                    <div class="decision-block">
+                        <div class="shape diamond drop-zone" data-id="11"></div>
+                        <div class="side-path">
+                             <div class="path-label yes-label">Yes</div>
+                            <div class="shape rectangle drop-zone" data-id="12"></div>
+                        </div>
+                    </div>
+
+                    <!-- Loop back arrow -->
+                    <div class="loop-connector-wrapper">
+                        <div class="loop-connector">
+                            <span class="loop-connector-text">No, Continue Loop</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button id="check-btn">Check Answers</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+        </div>
+
+        <div class="text-bank-panel">
+            <h2>Text Bank</h2>
+            <div class="text-bank">
+                <!-- Draggable items will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textBank = document.querySelector('.text-bank');
+            const checkBtn = document.getElementById('check-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            // Store the initial state of the text items
+            const initialTextItems = [
+                { id: 8, text: 'Enemy Hit?' },
+                { id: 2, text: 'Load Assets' },
+                { id: 12, text: 'Next Level' },
+                { id: 1, text: 'START' },
+                { id: 5, text: 'Move Player & Fire Bullet' },
+                { id: 11, text: 'All Enemies Gone?' },
+                { id: 3, text: 'Create Player & Enemies' },
+                { id: 6, text: 'Move Enemies' },
+                { id: 9, text: 'Remove Enemy' },
+                { id: 4, text: 'Get Player Input' },
+                { id: 10, text: 'Add Score' },
+                { id: 7, text: 'Check Collisions' },
+            ];
+            
+            let draggables = [];
+
+            // Function to create and add draggable elements to the text bank
+            function populateTextBank() {
+                textBank.innerHTML = ''; // Clear existing items
+                draggables = []; // Reset the array
+                
+                // Shuffle for variety each time it's reset
+                const shuffledItems = [...initialTextItems].sort(() => Math.random() - 0.5);
+
+                shuffledItems.forEach(item => {
+                    const el = document.createElement('div');
+                    el.classList.add('draggable-text');
+                    el.setAttribute('draggable', 'true');
+                    el.dataset.id = item.id;
+                    el.textContent = item.text;
+                    textBank.appendChild(el);
+                    draggables.push(el);
+                });
+
+                addDragListeners();
+            }
+
+            function addDragListeners() {
+                draggables.forEach(draggable => {
+                    draggable.addEventListener('dragstart', (e) => {
+                        e.target.classList.add('dragging');
+                    });
+                    draggable.addEventListener('dragend', (e) => {
+                        e.target.classList.remove('dragging');
+                    });
+                });
+            }
+
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault(); // Necessary to allow dropping
+                    if (!zone.contains(document.querySelector('.dragging'))) {
+                         zone.classList.add('hover');
+                    }
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('hover');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('hover');
+                    const dragged = document.querySelector('.dragging');
+                    if (!dragged) return;
+
+                    // If the drop zone is not empty, swap the elements
+                    if (zone.children.length > 0) {
+                        const existingChild = zone.firstElementChild;
+                        const sourceContainer = dragged.parentElement;
+                        
+                        // Move the existing child back to where the dragged element came from
+                        sourceContainer.appendChild(existingChild);
+                    }
+                    
+                    // Place the new element in the drop zone
+                    zone.appendChild(dragged);
+                });
+            });
+
+            // --- Button Event Listeners ---
+            checkBtn.addEventListener('click', () => {
+                dropZones.forEach(zone => {
+                    zone.classList.remove('correct', 'incorrect');
+                    const droppedItem = zone.querySelector('.draggable-text');
+                    if (droppedItem) {
+                        // Check if the data-id of the zone matches the dropped item
+                        if (zone.dataset.id === droppedItem.dataset.id) {
+                            zone.classList.add('correct');
+                        } else {
+                            zone.classList.add('incorrect');
+                        }
+                    } else {
+                        // Mark empty zones as incorrect
+                        zone.classList.add('incorrect');
+                    }
+                });
+            });
+
+            resetBtn.addEventListener('click', () => {
+                // Clear all drop zones
+                dropZones.forEach(zone => {
+                    zone.innerHTML = '';
+                    zone.classList.remove('correct', 'incorrect');
+                });
+                // Repopulate the text bank with all original items
+                populateTextBank();
+            });
+
+            // Initial setup when the page loads
+            populateTextBank();
+        });
+    </script>
+</body>
+</html>
+

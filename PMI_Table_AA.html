@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMI Chart - Game Analysis</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+        /* Using CSS variables for easy theme changes */
+        :root {
+            --primary-color: #005a9c;
+            --light-gray: #f0f0f0;
+            --medium-gray: #ddd;
+            --dark-gray: #333;
+            --line-height-val: 1.8em; /* Define line height as a variable */
+        }
+
+        /* Universal box-sizing for predictable layouts */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Neue', cursive, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            
+            /* Flexbox to center the container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 8.5in;
+            min-height: 11in;
+            margin: 0; /* Margin is handled by body's flexbox */
+            padding: 40px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-field {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .student-info label {
+            font-weight: 700;
+            margin-right: 10px;
+            flex-shrink: 0; /* Prevents label from shrinking */
+        }
+
+        .student-info input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid var(--medium-gray);
+            padding: 5px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        .student-info input:focus {
+            outline: none;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .game-title-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .game-title-container label {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+
+        .game-title-container input {
+            width: 60%;
+            border: none;
+            border-bottom: 2px solid var(--medium-gray);
+            font-size: 1.5em;
+            font-family: inherit;
+        }
+        .game-title-container input:focus {
+            outline: none;
+            border-bottom-color: var(--primary-color);
+        }
+
+        .pmi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .pmi-table th, .pmi-table td {
+            border: 2px solid var(--medium-gray);
+            padding: 15px;
+            vertical-align: top;
+            width: 33.33%;
+        }
+
+        .pmi-table th {
+            font-size: 1.5em;
+            padding: 20px 15px;
+        }
+
+        .plus-col th { background-color: #d4edda; color: #155724; }
+        .minus-col th { background-color: #f8d7da; color: #721c24; }
+        .interesting-col th { background-color: #fff3cd; color: #856404; }
+
+        .sentence-starter {
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            height: calc(var(--line-height-val) * 12); /* Set height to be 12 lines tall */
+            border: none;
+            padding: 0 10px;
+            font-size: 1.1em;
+            font-family: inherit;
+            line-height: var(--line-height-val);
+            resize: none;
+            background-color: #fdfdfd;
+            background-image: linear-gradient(to bottom, #ccc 1px, transparent 1px);
+            background-size: 100% var(--line-height-val);
+            background-position: top;
+        }
+
+        textarea:focus {
+            outline: none;
+        }
+
+        .print-button {
+            display: block;
+            width: 200px;
+            margin: 40px auto 20px;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+
+        @media print {
+            body { 
+                background-color: white;
+                padding: 0;
+                margin: 0;
+                display: block; /* Override flex for printing */
+            }
+            .container { 
+                box-shadow: none; 
+                border: none; 
+                margin: 0; 
+                padding: 0;
+                max-width: 100%;
+                min-height: auto;
+            }
+            .pmi-table th, .pmi-table td {
+                border-color: #888; /* Make border darker for print */
+            }
+            .print-button { 
+                display: none; 
+            }
+            textarea { 
+                background-image: linear-gradient(to bottom, #ccc 1px, transparent 1px);
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Game Analysis: PMI Chart</h1>
+        </header>
+        
+        <div class="student-info">
+            <div class="info-field">
+                <label for="student-name">Name:</label>
+                <input type="text" id="student-name">
+            </div>
+            <div class="info-field">
+                <label for="student-date">Date:</label>
+                <input type="text" id="student-date">
+            </div>
+        </div>
+        
+        <div class="game-title-container">
+            <label for="game-name">🎮 Game Title:</label>
+            <input type="text" id="game-name" placeholder="Enter game title here...">
+        </div>
+        
+        <table class="pmi-table">
+            <thead>
+                <tr>
+                    <th class="plus-col">➕ Plus</th>
+                    <th class="minus-col">➖ Minus</th>
+                    <th class="interesting-col">💡 Interesting</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="sentence-starter">This game is good because...</div>
+                        <textarea></textarea>
+                    </td>
+                    <td>
+                        <div class="sentence-starter">This game could be better if...</div>
+                        <textarea></textarea>
+                    </td>
+                    <td>
+                        <div class="sentence-starter">I noticed that...</div>
+                        <textarea></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <button class="print-button" onclick="window.print()">Print Worksheet</button>
+    </div>
+</body>
+</html>
