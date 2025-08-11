@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year 9 Game Design Lesson 4: Research, Planning & Flowcharts</title>
+    <!-- jsPDF and html2canvas Libraries for PDF Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #764ba2;
+            margin: 20px 0 15px;
+            font-size: 1.3em;
+        }
+        ul {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+        li {
+            margin: 8px 0;
+        }
+
+        /* Meta Info Section */
+        .meta-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        .meta-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        /* Index Section */
+        .index-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        .index-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .index-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .index-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .index-list li:hover {
+            transform: translateX(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .index-list a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .index-list .time {
+            margin-left: auto;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Main Content Sections */
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .learning-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .success-criteria {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+        }
+        .activity-box {
+            background: #f3e5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #9c27b0;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .code-comment {
+            color: #75715e;
+        }
+        .pmi-example {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .pmi-example th {
+            background: #5c6bc0;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        .pmi-example td {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+        }
+        .plus-col { background: #f1f8e9; }
+        .minus-col { background: #fce4ec; }
+        .interesting-col { background: #fff3e0; }
+        .resource-links {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .resource-links h3 { color: #1976d2; margin-bottom: 15px; }
+        .resource-links a {
+            color: #1976d2;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .resource-links a:hover {
+            background: #1976d2;
+            color: white;
+            transform: translateX(5px);
+        }
+        .exit-ticket {
+            background: #ffebee;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #ef5350;
+        }
+        .homework-section {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 5px solid #4caf50;
+        }
+        .flowchart-example {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 2px dashed #999;
+        }
+        
+        /* --- TIMER STYLES --- */
+        .timer-box, .interactive-timer {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            user-select: none; /* Prevents text selection on double click */
+        }
+        .timer-box:hover, .interactive-timer:hover {
+            background-color: #e68a00;
+        }
+        .timer-box.running, .interactive-timer.running {
+            background-color: #4caf50; /* Green when running */
+        }
+        .timer-box.paused, .interactive-timer.paused {
+            background-color: #f44336; /* Red when paused */
+        }
+        
+        .game-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .game-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .game-card a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* --- NAVIGATION STYLES --- */
+        .navigation-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .nav-button, .pmi-button, .worksheet-button, .download-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #667eea;
+            color: white !important; /* Override other anchor styles */
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: none;
+            cursor: pointer;
+        }
+        .nav-button:hover, .pmi-button:hover, .worksheet-button:hover, .download-btn:hover {
+            background-color: #5a67d8;
+            transform: translateY(-2px);
+        }
+        .nav-button.return-index {
+            background-color: #764ba2;
+        }
+        .nav-button.return-index:hover {
+            background-color: #6c4298;
+        }
+        .nav-button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .pmi-button-container, .worksheet-button-container, .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .download-btn {
+            background-color: #28a745;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        
+        /* --- WORKSHEET STYLES --- */
+        .analysis-worksheet {
+            background-color: #fdf8e1;
+            border: 2px solid #f0ad4e;
+            border-left: 5px solid #f0ad4e;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .analysis-worksheet h4 {
+            color: #c08529;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0ad4e;
+            padding-bottom: 10px;
+        }
+        .worksheet-section {
+            margin-bottom: 20px;
+        }
+        .worksheet-section h5 {
+            color: #764ba2;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        .worksheet-item {
+            margin-bottom: 8px;
+        }
+        .worksheet-item input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .add-process-btn {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .add-process-btn:hover {
+            background-color: #4cae4c;
+        }
+
+        /* --- NEW FLOWCHART SHAPES GUIDE STYLES --- */
+        .shapes-guide-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 4px solid #764ba2;
+        }
+        .shapes-guide-container h4 {
+            text-align: center;
+            color: #764ba2;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        .shapes-gallery {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .shape-container {
+            position: relative;
+            cursor: pointer;
+            width: 160px;
+            height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .shape-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .shape-container:hover .shape-item {
+            transform: scale(1.1);
+        }
+        .shape-item.oval {
+            width: 140px;
+            height: 85px;
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            border-radius: 50%;
+        }
+        .shape-item.rectangle {
+            width: 150px;
+            height: 85px;
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            border-radius: 10px;
+        }
+        .shape-item.diamond {
+            width: 95px;
+            height: 95px;
+            background: linear-gradient(135deg, #ff512f, #f09819);
+            transform: rotate(45deg);
+        }
+        .shape-item.diamond .shape-text {
+            transform: rotate(-45deg);
+        }
+        .shape-item.parallelogram {
+            width: 160px;
+            height: 75px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            transform: skew(-20deg);
+        }
+        .shape-item.parallelogram .shape-text {
+            transform: skew(20deg);
+        }
+        .tooltip {
+            visibility: hidden;
+            width: 180px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 105%;
+            left: 50%;
+            margin-left: -90px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            pointer-events: none;
+        }
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .shape-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            .container { max-width: 100%; }
+            .section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .header, .navigation-bar, .worksheet-button-container, .pmi-button-container, .button-container { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Year 9 Game Design Lesson 4 🎮</h1>
+            <h2 style="color: white; font-size: 1.5em; margin-top: 10px;">Research, Planning & Flowcharts</h2>
+        </div>
+        <div class="meta-info">
+            <div class="meta-item"><div class="meta-label">Duration</div><div>100 minutes</div></div>
+            <div class="meta-item"><div class="meta-label">Year Level</div><div>Year 9</div></div>
+            <div class="meta-item"><div class="meta-label">Unit</div><div>Creating Games & Simulations</div></div>
+            <div class="meta-item"><div class="meta-label">Assessment</div><div>Task 2</div></div>
+            <div class="meta-item"><div class="meta-label">Focus Games</div><div>Jet Fighter, Snake, Pac-Man</div></div>
+        </div>
+    
+        <div id="main-index" class="index-section">
+            <h2 class="index-title">📚 Lesson Index</h2>
+            <ul class="index-list">
+                <li><a href="#learning-intentions">📎 Learning Intentions & Success Criteria <span class="time interactive-timer">5 mins</span></a></li>
+                <li><a href="#welcome-review">1️⃣ Welcome & Review <span class="time interactive-timer">10 mins</span></a></li>
+                <li><a href="#arcade-hook">2️⃣ Arcade Hook: Choose Your Classic <span class="time interactive-timer">15 mins</span></a></li>
+                <li><a href="#demonstrating">3️⃣ I Do: Demonstrating Research Methods <span class="time interactive-timer">20 mins</span></a></li>
+                <li><a href="#collaborative">4️⃣ We Do: Collaborative Research <span class="time interactive-timer">25 mins</span></a></li>
+                <li><a href="#independent">5️⃣ You Do: Independent Research & Planning <span class="time interactive-timer">25 mins</span></a></li>
+                <li><a href="#portfolio-check">6️⃣ Portfolio Check-In <span class="time interactive-timer">5 mins</span></a></li>
+                <li><a href="#exit-ticket">7️⃣ Exit Ticket <span class="time interactive-timer">5 mins</span></a></li>
+                <li><a href="#resources">📚 Resources Summary</a></li>
+                <li><a href="#assessment-alignment">✅ Assessment Alignment</a></li>
+                <li><a href="#homework">📝 Homework</a></li>
+            </ul>
+        </div>
+    
+        <section id="learning-intentions" class="section">
+            <h2>📎 Learning Intentions & Success Criteria</h2>
+            <div class="learning-box">
+                <h3>Learning Intentions</h3>
+                <p>Students will:</p>
+                <ul>
+                    <li>Analyse existing arcade games using PMI charts</li>
+                    <li>Plan game logic using flowcharts</li>
+                    <li>Apply computational thinking to break down game mechanics</li>
+                    <li>Complete the "Researching and Planning" section of their portfolio</li>
+                </ul>
+            </div>
+            <div class="success-criteria">
+                <h3>Success Criteria</h3>
+                <p>Students can:</p>
+                <ul>
+                    <li>✓ Create a PMI chart for two classic arcade games</li>
+                    <li>✓ Create a logical flowchart that maps the sequence of their own proposed game</li>
+                    <li>✓ Identify input, process, and output functions in researched games</li>
+                    <li>✓ Justify game design decisions based on research</li>
+                </ul>
+            </div>
+            <div class="navigation-bar">
+                <a href="#" class="nav-button disabled">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#welcome-review" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="welcome-review" class="section">
+            <h2>1️⃣ Welcome & Review <span class="timer-box">10 mins</span></h2>
+            <h3>Learning Intentions Display</h3>
+            <ul>
+                <li>Display today's goals on the board</li>
+                <li>Quick recap of previous lessons' achievements</li>
+            </ul>
+            <h3>Interactive Review: Space Invaders Deconstruction</h3>
+            <p>As a class, let's break down the classic Space Invaders game to understand its core mechanics.</p>
+            
+            <div class="analysis-worksheet" id="space-invaders-worksheet">
+                <h4>Space Invaders Analysis</h4>
+                <div class="worksheet-section">
+                    <h5>INPUT (What controls the game?)</h5>
+                    <div class="worksheet-item">
+                        <label>• Left arrow key → Ship moves left</label>
+                    </div>
+                    <div class="worksheet-item">
+                        <label>• Right arrow key → Ship moves right</label>
+                    </div>
+                    <div class="worksheet-item">
+                        <label>• Spacebar → Fire bullet</label>
+                    </div>
+                     <div class="worksheet-item">
+                        <label for="input-other">• Other: </label>
+                        <input type="text" id="input-other" name="input-other" placeholder="e.g., 'P' for pause?">
+                    </div>
+                </div>
+
+                <div class="worksheet-section">
+                    <h5>PROCESS (How does the game handle actions?)</h5>
+                     <div class="worksheet-item">
+                        <label for="process-speed">• <strong>Movement Speed:</strong> Is it constant or variable?</label>
+                        <input type="text" id="process-speed" name="process-speed">
+                    </div>
+                     <div class="worksheet-item">
+                        <label for="process-boundary">• <strong>Boundary Detection:</strong> What happens at screen edges?</label>
+                        <input type="text" id="process-boundary" name="process-boundary">
+                    </div>
+                     <div class="worksheet-item">
+                        <label for="process-smooth">• <strong>Smooth Movement:</strong> Does the ship move in steps or smoothly?</label>
+                        <input type="text" id="process-smooth" name="process-smooth">
+                    </div>
+                     <div class="worksheet-item">
+                        <label for="process-keys">• <strong>Multiple Keys:</strong> Can you press left and right together? What happens?</label>
+                        <input type="text" id="process-keys" name="process-keys">
+                    </div>
+                    <div id="additional-processes">
+                    </div>
+                    <button class="add-process-btn" onclick="addProcess()">+ Add Another Process</button>
+                </div>
+
+                <div class="worksheet-section">
+                    <h5>OUTPUT (What do you see?)</h5>
+                     <div class="worksheet-item">
+                        <label for="output-visual">• <strong>Visual Feedback:</strong> How does the ship show movement?</label>
+                        <input type="text" id="output-visual" name="output-visual">
+                    </div>
+                     <div class="worksheet-item">
+                        <label for="output-refresh">• <strong>Position Updates:</strong> How quickly does the screen refresh?</label>
+                        <input type="text" id="output-refresh" name="output-refresh">
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="download-btn" onclick="downloadPDF('space-invaders-worksheet', 'space-invaders-analysis.pdf')">Download as PDF</button>
+                </div>
+            </div>
+            
+            <div class="code-block">
+                <span class="code-comment"># Remember this from last lesson? This is part of the PROCESS.</span>
+                <br>if keys[pygame.K_LEFT]:
+                <br>    player.x -= player_speed
+                <br>if keys[pygame.K_RIGHT]:
+                <br>    player.x += player_speed
+            </div>
+
+            <div class="navigation-bar">
+                <a href="#learning-intentions" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#arcade-hook" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="arcade-hook" class="section">
+            <h2>2️⃣ Arcade Hook: Choose Your Classic <span class="timer-box">15 mins</span></h2>
+            <h3>Activity Setup</h3>
+            <p>Students select and play ONE classic game for 7-8 minutes:</p>
+            <div class="game-options">
+                <div class="game-card"><h3>🛩️ Jet Fighter</h3><a href="https://www.retrogames.cc/arcade-games/jet-fighter.html" target="_blank">Play Online</a></div>
+                <div class="game-card"><h3>🐍 Snake</h3><a href="https://www.google.com/search?q=snake+game" target="_blank">Google Snake Game</a></div>
+                <div class="game-card"><h3>👻 Pac-Man</h3><a href="https://www.google.com/search?q=pac-man+game" target="_blank">Free Pac-Man</a></div>
+            </div>
+            <div class="activity-box">
+                <h3>Quick Analysis Task (7 minutes)</h3>
+                <p>
+                    Students complete a digital worksheet identifying the:
+                    <ul>
+                        <li>Main objective</li>
+                        <li>Player controls (INPUT)</li>
+                        <li>Game rules (PROCESS)</li>
+                        <li>Visual/audio feedback (OUTPUT)</li>
+                    </ul>
+                </p>
+                <div class="worksheet-button-container">
+                    <a href="#" target="_blank" class="worksheet-button">Link to worksheet</a>
+                </div>
+            </div>
+            <div class="navigation-bar">
+                <a href="#welcome-review" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#demonstrating" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="demonstrating" class="section">
+            <h2>3️⃣ I Do: Demonstrating Research Methods <span class="timer-box">20 mins</span></h2>
+            
+            <h3>Part 1: Understanding PMI Charts (5 minutes)</h3>
+            <p>Display and explain a completed PMI chart for PONG.</p>
+            
+            <table class="pmi-example">
+                <tr><th>Plus (Positives) ➕</th><th>Minus (Negatives) ➖</th><th>Interesting 💡</th></tr>
+                <tr>
+                    <td class="plus-col">• Simple controls<br>• Easy to understand<br>• Quick rounds<br>• Instant feedback</td>
+                    <td class="minus-col">• Can get repetitive<br>• Limited gameplay variety<br>• No progression/levels<br>• Basic graphics</td>
+                    <td class="interesting-col">• First commercial success<br>• Two-player competitive<br>• Physics-based gameplay<br>• Inspired countless games</td>
+                </tr>
+            </table>
+
+            <div class="pmi-button-container">
+                 <a href="https://example.com/pmi-chart-template.html" target="_blank" class="pmi-button">Complete a PMI Table for two more arcade Games. You can use, Pacman, Snake and Jet Fighter from the previous section.</a>
+            </div>
+            
+            <h3>Part 2: Creating a Flowchart (10 minutes)</h3>
+            
+            <div class="shapes-guide-container">
+                <h4>Interactive Shapes Guide (Hover for meaning)</h4>
+                <div class="shapes-gallery">
+                    <div class="shape-container">
+                        <div class="shape-item oval"><span class="shape-text">Start/End</span></div>
+                        <span class="tooltip">The <strong>Oval</strong> represents the start and end points of the flowchart.</span>
+                    </div>
+                    <div class="shape-container">
+                        <div class="shape-item rectangle"><span class="shape-text">Process</span></div>
+                        <span class="tooltip">The <strong>Rectangle</strong> is for actions or processes, like 'move player' or 'add to score'.</span>
+                    </div>
+                    <div class="shape-container">
+                        <div class="shape-item diamond"><span class="shape-text">Decision</span></div>
+                        <span class="tooltip">The <strong>Diamond</strong> represents a Yes/No question, like 'Is game over?'.</span>
+                    </div>
+                    <div class="shape-container">
+                        <div class="shape-item parallelogram"><span class="shape-text">Input/Output</span></div>
+                        <span class="tooltip">The <strong>Parallelogram</strong> shows user input (e.g., key press) or program output (e.g., display score).</span>
+                    </div>
+                </div>
+            </div>
+
+            <p>Live demonstration using <a href="https://app.diagrams.net/" target="_blank">Draw.io</a> or <a href="https://www.lucidchart.com/" target="_blank">Lucidchart</a>:</p>
+            <div class="flowchart-example">[START] → [Display Menu] → [Player Selects Play] →<br>[Initialize Game] → [Game Loop Starts] →<br>[Check Input] → [Move Player] → [Check Collisions] →<br>[Update Score] → [Game Over?] →<br>YES → [Show Final Score] → [END]<br>NO → [Loop back to Check Input]</div>
+            
+            <!-- NEW BUTTON FOR PONG BUILDER -->
+            <div class="button-container">
+                <!-- This link should point to your hosted pong-flowchart-builder.html file on GitHub -->
+                <a href="pong-flowchart-builder.html" target="_blank" class="worksheet-button">Launch Interactive Pong Flowchart Builder</a>
+            </div>
+
+            <h3>Part 3: Research Resources (5 minutes)</h3>
+            <div class="resource-links">
+                <h3>Where to Find Information:</h3>
+                <a href="http://adb.arcadeitalia.net/" target="_blank">📊 Arcade History Database</a>
+                <a href="https://www.classicgaming.cc/classics/" target="_blank">🎮 Classic Gaming</a>
+                <a href="https://www.timetoast.com/timelines/the-golden-age-of-arcade-games-1970-1980" target="_blank">📅 Timeline: Golden Age of Arcade Games</a>
+            </div>
+            <div class="navigation-bar">
+                <a href="#arcade-hook" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#collaborative" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="collaborative" class="section">
+            <h2>4️⃣ We Do: Collaborative Research <span class="timer-box">25 mins</span></h2>
+            <h3>Class Activity: Build a Space Invaders Flowchart Together</h3>
+            <p>Using the interactive whiteboard or shared <a href="https://jamboard.google.com/" target="_blank">Jamboard</a>:</p>
+            <div class="activity-box">
+                <h4>1. Start Simple (5 minutes)</h4><ul><li>What happens when the game starts?</li><li>Student suggestions → Teacher adds to flowchart</li></ul>
+                <h4>2. Add Game Loop (10 minutes)</h4><ul><li>Students identify each step in pairs</li><li>Share and add to class flowchart</li></ul>
+                <h4>3. Include Decision Points (10 minutes)</h4><ul><li>Where does the game make choices?</li><li>Add diamond shapes for decisions</li></ul>
+            </div>
+            <div class="flowchart-example"><h4>Example Collaborative Flowchart:</h4>[START] → [Load Assets] → [Create Player Ship] →<br>[Create Enemy Grid] → [GAME LOOP] →<br>[Get Player Input] → [Move Player?] →<br>[Fire Bullet?] → [Move Enemies] →<br>[Check Collisions] → [Enemy Hit?] →<br>YES → [Remove Enemy] → [Add Score] → [All Enemies Gone?]<br>YES → [Next Level]<br>NO → [Continue Loop]<br>NO → [Continue Loop]</div>
+            <div class="navigation-bar">
+                <a href="#demonstrating" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#independent" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="independent" class="section">
+            <h2>5️⃣ You Do: Independent Research & Planning <span class="timer-box">25 mins</span></h2>
+            <h3>Portfolio Work Time</h3>
+            <p>Students work on their "Researching and Planning" section:</p>
+            <div class="activity-box">
+                <h4>1. Research Phase (10 minutes)</h4><ul><li>Choose TWO games from the provided list</li><li>Use research links to find information</li><li>Take notes on gameplay mechanics</li></ul>
+                <h4>2. PMI Charts (8 minutes)</h4><ul><li>Create one PMI chart for each game</li><li>Include at least 3 points in each column</li></ul>
+                <h4>3. Personal Game Flowchart (7 minutes)</h4><ul><li>Start sketching flowchart for own game idea</li><li>Focus on main game loop</li><li>Include at least one decision point</li></ul>
+            </div>
+            <div class="resource-links">
+                <h3>Digital Tools Options:</h3>
+                <a href="https://docs.google.com/" target="_blank">📝 PMI Charts: Google Docs Template</a>
+                <a href="https://app.diagrams.net/" target="_blank">📊 Flowcharts: Draw.io</a>
+                <a href="https://www.lucidchart.com/" target="_blank">📈 Flowcharts: Lucidchart</a>
+            </div>
+            <div class="navigation-bar">
+                <a href="#collaborative" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#portfolio-check" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="portfolio-check" class="section">
+            <h2>6️⃣ Portfolio Check-In <span class="timer-box">5 mins</span></h2>
+            <div class="activity-box">
+                <h3>Peer Review Activity</h3>
+                <p>Partner swap for 2-minute reviews</p>
+                <h4>Use checklist:</h4>
+                <ul><li>✓ Two PMI charts complete?</li><li>✓ Flowchart started?</li><li>✓ Clear game objective identified?</li></ul>
+            </div>
+            <div class="navigation-bar">
+                <a href="#independent" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#exit-ticket" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="exit-ticket" class="section">
+            <h2>7️⃣ Exit Ticket <span class="timer-box">5 mins</span></h2>
+            <div class="exit-ticket">
+                <h3>Digital Exit Ticket</h3>
+                <p>Use <a href="https://forms.microsoft.com/" target="_blank">Microsoft Forms</a> or <a href="https://forms.google.com/" target="_blank">Google Forms</a>:</p>
+                <ol>
+                    <li><strong>Knowledge Check:</strong> What symbol shape represents a decision in a flowchart?<ul><li>a) Rectangle</li><li>b) Diamond ✓</li><li>c) Circle</li><li>d) Oval</li></ul></li>
+                    <li><strong>Reflection:</strong> Name one game mechanic from your research that you want to include in your game.</li>
+                    <li><strong>Planning:</strong> What is the main objective of your game going to be?</li>
+                    <li><strong>Self-Assessment:</strong> Rate your confidence (1-5) in creating flowcharts.</li>
+                </ol>
+            </div>
+            <div class="navigation-bar">
+                <a href="#portfolio-check" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#resources" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="resources" class="section">
+            <h2>📚 Resources Summary</h2>
+            <div class="resource-links"><h3>🎮 Game Links:</h3><a href="https://www.retrogames.cc/arcade-games/jet-fighter.html" target="_blank">Jet Fighter</a><a href="https://www.google.com/search?q=snake+game" target="_blank">Snake (Google)</a><a href="https://www.google.com/search?q=pac-man+game" target="_blank">Pac-Man (Google)</a></div>
+            <div class="resource-links"><h3>📖 Research Resources:</h3><a href="http://adb.arcadeitalia.net/" target="_blank">Arcade History Database</a><a href="https://www.classicgaming.cc/classics/" target="_blank">Classic Gaming</a><a href="https://www.timetoast.com/timelines/the-golden-age-of-arcade-games-1970-1980" target="_blank">Timeline: Golden Age of Arcade Games</a><a href="https://www.arcade-museum.com/" target="_blank">Video Game History</a></div>
+            <div class="resource-links"><h3>🛠️ Digital Tools:</h3><a href="https://app.diagrams.net/" target="_blank">Flowchart Creation: Draw.io</a><a href="https://www.lucidchart.com/" target="_blank">Flowchart Creation: Lucidchart</a><a href="https://docs.google.com/" target="_blank">PMI Template: Google Docs</a><a href="https://jamboard.google.com/" target="_blank">Collaborative Board: Jamboard</a></div>
+            <div class="resource-links"><h3>♿ Accessibility Tools:</h3><a href="https://www.microsoft.com/en-us/education/products/learning-tools" target="_blank">Text-to-Speech: Immersive Reader</a><a href="https://www.online-stopwatch.com/classroom-timers/" target="_blank">Visual Timer</a></div>
+            <div class="resource-links"><h3>📺 Tutorial Videos:</h3><a href="https://www.youtube.com/watch?v=SWRDqTx8d4k" target="_blank">Creating Flowcharts for Games</a></div>
+            <div class="navigation-bar">
+                <a href="#exit-ticket" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#assessment-alignment" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="assessment-alignment" class="section">
+            <h2>✅ Assessment Alignment with Task 2</h2>
+            <p>This lesson directly contributes to the portfolio sections:</p>
+            <ul><li><strong>Identifying and Defining:</strong> Design brief refinement</li><li><strong>Researching and Planning:</strong> PMI charts and flowchart creation</li></ul>
+            <div class="success-criteria">
+                <h3>Students should have completed by lesson end:</h3>
+                <ul><li>✓ Two PMI charts for researched games</li><li>✓ Initial flowchart for their game concept</li><li>✓ Reflection on game mechanics to incorporate</li><li>✓ Clear identification of INPUT, PROCESS, OUTPUT for their game</li></ul>
+            </div>
+            <div class="navigation-bar">
+                <a href="#resources" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#homework" class="nav-button">Next ➡️</a>
+            </div>
+        </section>
+    
+        <section id="homework" class="section">
+            <div class="homework-section">
+                <h2>📝 Homework</h2>
+                <ol>
+                    <li>Finalise flowchart for personal game design</li>
+                    <li>Add colour coding to flowchart:<ul><li>Green = Start/End</li><li>Blue = Process</li><li>Yellow = Decision</li><li>Red = Game Over</li></ul></li>
+                    <li>Write one paragraph explaining which researched game influenced your design most and why</li>
+                    <li>Optional: Play one more classic game and create a third PMI chart</li>
+                </ol>
+            </div>
+            <div class="navigation-bar">
+                <a href="#assessment-alignment" class="nav-button">⬅️ Back</a>
+                <a href="#main-index" class="nav-button return-index">📚 Return to Index</a>
+                <a href="#" class="nav-button disabled">Next ➡️</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // --- SCRIPT FOR WORKSHEET ---
+        function addProcess() {
+            const container = document.getElementById('additional-processes');
+            const newItem = document.createElement('div');
+            newItem.className = 'worksheet-item';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'additional-process';
+            input.placeholder = 'Describe another game process...';
+            
+            newItem.appendChild(input);
+            container.appendChild(newItem);
+        }
+
+        // --- SCRIPT FOR PDF DOWNLOAD ---
+        function downloadPDF(elementId, fileName) {
+            const { jsPDF } = window.jspdf;
+            const worksheetElement = document.getElementById(elementId);
+            
+            html2canvas(worksheetElement, { scale: 2 }).then(canvas => {
+                const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const ratio = canvas.width / canvas.height;
+                const imgWidth = pdfWidth - 20;
+                const imgHeight = imgWidth / ratio;
+                
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, imgWidth, imgHeight);
+                pdf.save(fileName);
+            });
+        }
+
+        // --- SCRIPT FOR INTERACTIVE TIMERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const timers = {};
+
+            // --- BUZZER FUNCTION ---
+            function playBuzzer() {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(120, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 1.5);
+            }
+
+            // Helper function to format seconds into MM:SS
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+            }
+
+            // Function to handle the countdown tick
+            function tick(timerId) {
+                const timer = timers[timerId];
+                timer.remaining--;
+                timer.element.textContent = formatTime(timer.remaining);
+
+                if (timer.remaining <= 0) {
+                    clearInterval(timer.intervalId);
+                    playBuzzer(); // Play sound when timer ends
+                    timer.element.textContent = "Time's Up!";
+                    timer.state = 'idle';
+                    timer.remaining = timer.duration;
+                    timer.element.classList.remove('running', 'paused');
+                    setTimeout(() => {
+                        timer.element.textContent = timer.originalText;
+                    }, 3000);
+                }
+            }
+
+            // Initialize all timers on the page
+            document.querySelectorAll('.interactive-timer, .timer-box').forEach((el, index) => {
+                const timerId = `timer-${index}`;
+                el.id = timerId;
+                
+                const timeText = el.textContent;
+                const minutes = parseInt(timeText, 10);
+                const durationInSeconds = minutes * 60;
+
+                timers[timerId] = {
+                    element: el,
+                    duration: durationInSeconds,
+                    remaining: durationInSeconds,
+                    state: 'idle', // states: idle, running, paused
+                    intervalId: null,
+                    originalText: timeText
+                };
+
+                el.addEventListener('click', () => {
+                    const timer = timers[timerId];
+
+                    switch (timer.state) {
+                        case 'idle':
+                            timer.state = 'running';
+                            el.classList.add('running');
+                            el.classList.remove('paused');
+                            timer.intervalId = setInterval(() => tick(timerId), 1000);
+                            break;
+                        case 'running':
+                            timer.state = 'paused';
+                            el.classList.add('paused');
+                            el.classList.remove('running');
+                            clearInterval(timer.intervalId);
+                            break;
+                        case 'paused':
+                            timer.state = 'running';
+                            el.classList.add('running');
+                            el.classList.remove('paused');
+                            timer.intervalId = setInterval(() => tick(timerId), 1000);
+                            break;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

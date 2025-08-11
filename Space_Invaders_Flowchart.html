@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders Flowchart</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+            color: #333;
+        }
+        .flowchart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Adjusted gap */
+        }
+        .shape {
+            padding: 12px 22px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 220px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+        }
+        .oval {
+            background: linear-gradient(45deg, #56ab2f, #a8e063);
+            border-radius: 999px;
+        }
+        .rectangle {
+            background: linear-gradient(45deg, #4e54c8, #8f94fb);
+            border-radius: 8px;
+        }
+        .diamond {
+            background: linear-gradient(45deg, #f09819, #ff512f);
+            width: 280px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .connector {
+            position: relative;
+            text-align: center;
+        }
+        .arrow-down::after {
+            content: '↓';
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin: -5px 0;
+        }
+        .loop-container {
+            border: 3px dashed #777;
+            border-radius: 15px;
+            padding: 30px 40px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+        .loop-label {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #f4f7f9;
+            padding: 0 10px;
+            font-weight: bold;
+            color: #555;
+            font-size: 1.2em;
+        }
+        .parallel-processes {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            margin: 20px 0;
+            padding-top: 40px;
+            position: relative;
+        }
+        .parallel-processes::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background-color: #555;
+        }
+        .process-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+        .process-branch::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 3px;
+            height: 20px;
+            background-color: #555;
+            transform: translateX(-50%);
+        }
+        
+        /* --- NEW DECISION BRANCH STYLES --- */
+        .decision-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 600px; /* Provide ample width for branches */
+            margin: 10px 0;
+        }
+        .decision-block .diamond {
+            z-index: 2; /* Ensure diamond is above lines */
+        }
+        .no-path-connector {
+            position: relative;
+        }
+        .no-path-label {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-weight: bold;
+            background: #f4f7f9;
+            padding: 0 5px;
+        }
+        .yes-path {
+            position: absolute;
+            top: 60px; /* Center of diamond */
+            left: 50%;
+            margin-left: 140px; /* Push to the right */
+            display: flex;
+            align-items: center;
+            z-index: 1;
+        }
+        .yes-path-label {
+            position: absolute;
+            top: -25px;
+            left: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+            background: #f4f7f9;
+            padding: 0 5px;
+        }
+        .yes-path-line {
+            height: 3px;
+            width: 30px;
+            background-color: #555;
+        }
+        .yes-path .shape {
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flowchart-container">
+        <div class="shape oval">START</div>
+        <div class="connector arrow-down"></div>
+        <div class="shape rectangle">Initialize Score, Lives, Aliens & Shields</div>
+        
+        <div class="loop-container">
+            <div class="loop-label">Main Game Loop (Repeats Every Frame)</div>
+            <div class="connector arrow-down"></div>
+            <div class="shape rectangle">Draw All Game Elements</div>
+            <div class="connector arrow-down"></div>
+
+            <div class="parallel-processes">
+                <div class="process-branch">
+                    <div class="shape rectangle">Get Player Input</div>
+                    <div class="connector arrow-down"></div>
+                    <div class="shape rectangle">Update Player Position</div>
+                    <div class="connector arrow-down"></div>
+                    <div class="shape rectangle">Create Player Laser</div>
+                </div>
+                <div class="process-branch">
+                    <div class="shape rectangle">Update Alien Swarm</div>
+                    <div class="connector arrow-down"></div>
+                    <div class="shape rectangle">Create Alien Bombs</div>
+                </div>
+                <div class="process-branch">
+                    <div class="shape rectangle">Update Projectiles</div>
+                    <div class="connector arrow-down"></div>
+                    <div class="shape rectangle">Remove Off-Screen</div>
+                </div>
+            </div>
+
+            <div class="connector arrow-down"></div>
+            <div class="shape rectangle" style="background: linear-gradient(45deg, #2c3e50, #34495e);">Collision Detection Checks</div>
+            <div class="connector arrow-down"></div>
+
+            <!-- Decision Blocks -->
+            <div class="decision-block">
+                <div class="shape diamond">Laser Hit Alien?</div>
+                <div class="yes-path">
+                    <div class="yes-path-label">Yes</div>
+                    <div class="yes-path-line"></div>
+                    <div class="shape rectangle">Update Score, Kill Alien</div>
+                </div>
+                <div class="no-path-connector arrow-down"><div class="no-path-label">No</div></div>
+            </div>
+
+            <div class="decision-block">
+                <div class="shape diamond">Bomb Hit Player?</div>
+                <div class="yes-path">
+                    <div class="yes-path-label">Yes</div>
+                    <div class="yes-path-line"></div>
+                    <div class="shape rectangle">Decrease Lives, Reset Player</div>
+                </div>
+                <div class="no-path-connector arrow-down"><div class="no-path-label">No</div></div>
+            </div>
+
+            <div class="decision-block">
+                <div class="shape diamond">Anything Hit Shield?</div>
+                <div class="yes-path">
+                    <div class="yes-path-label">Yes</div>
+                    <div class="yes-path-line"></div>
+                    <div class="shape rectangle">Damage Shield</div>
+                </div>
+                <div class="no-path-connector arrow-down"><div class="no-path-label">No</div></div>
+            </div>
+
+            <div class="decision-block">
+                <div class="shape diamond">All Aliens Defeated?</div>
+                <div class="yes-path">
+                    <div class="yes-path-label">Yes</div>
+                    <div class="yes-path-line"></div>
+                    <div class="shape oval" style="background: linear-gradient(45deg, #11998e, #38ef7d);">VICTORY</div>
+                </div>
+                <div class="no-path-connector arrow-down"><div class="no-path-label">No</div></div>
+            </div>
+
+            <div class="decision-block">
+                <div class="shape diamond">Lives = 0 OR Aliens Reached Bottom?</div>
+                <div class="yes-path">
+                    <div class="yes-path-label">Yes</div>
+                    <div class="yes-path-line"></div>
+                    <div class="shape oval" style="background: linear-gradient(45deg, #cb2d3e, #ef473a);">GAME OVER</div>
+                </div>
+                <div class="no-path-connector arrow-down"><div class="no-path-label">No</div></div>
+            </div>
+            
+            <div class="shape rectangle">Loop to Top</div>
+        </div>
+    </div>
+</body>
+</html>

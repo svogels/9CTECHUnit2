@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Flowchart Builder: Pong</title>
+    <style>
+        /* General Body and Container Styles */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            gap: 30px;
+            width: 100%;
+            max-width: 1600px; /* Increased max-width for new branch */
+        }
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.07);
+            flex: 1;
+            min-width: 320px;
+            align-self: flex-start; /* Stick to the top */
+            position: sticky;
+            top: 20px;
+        }
+        .flowchart-area {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.07);
+            flex: 3; /* Adjusted flex */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 320px;
+        }
+
+        /* Control Panel Styles */
+        h1, h2 {
+            text-align: center;
+            color: #6a11cb;
+        }
+        h1 { font-size: 1.8em; margin-bottom: 20px; }
+        h2 { font-size: 1.3em; margin-bottom: 10px; }
+        .prompt {
+            background-color: #fafafa;
+            border-left: 5px solid #6a11cb;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #next-btn {
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+        }
+        #next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        #next-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+        #reset-btn {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+        }
+        #reset-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+
+        /* Pong Animation Canvas */
+        #pong-canvas {
+            display: block;
+            background: #000;
+            border-radius: 8px;
+            margin-top: 25px;
+            width: 100%;
+        }
+
+        /* Flowchart Element Styles */
+        .flowchart-block {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .flowchart-block.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .shape {
+            padding: 15px 25px;
+            font-weight: bold;
+            color: white;
+            min-width: 240px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        .oval { 
+            background: linear-gradient(45deg, #56ab2f, #a8e063);
+            border-radius: 999px;
+            padding: 20px 35px;
+        }
+        .rectangle { 
+            background: linear-gradient(45deg, #4e54c8, #8f94fb);
+            border-radius: 8px;
+        }
+        .diamond {
+            background: linear-gradient(45deg, #f09819, #ff512f);
+            width: 280px;
+            height: 130px;
+            padding: 10px;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .arrow {
+            font-size: 2.5em;
+            color: #555;
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .arrow-label {
+            position: absolute;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #333;
+            background: #f0f2f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            z-index: 20;
+        }
+        
+        /* Branching Logic Layout */
+        .decision-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .main-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .side-path {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 65px; /* Vertically center with diamond */
+            left: 50%;
+            transform: translateX(100px); /* Pushes the path to the right */
+        }
+        .side-path .arrow-label {
+            position: relative;
+            top: -25px;
+            left: 15px;
+        }
+        .side-path .shape {
+            margin-left: 10px;
+        }
+        .connector {
+            width: 40px;
+            height: 3px;
+            background-color: #555;
+        }
+
+        /* Modal and Final Button Styles */
+        #show-final-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+            z-index: 999;
+            display: none; /* Hidden by default */
+        }
+        #modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: auto;
+        }
+        #final-flowchart-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            transition: transform 0.3s ease; /* Added for smooth scaling */
+        }
+        #return-btn {
+            position: fixed; /* Changed to fixed to stay in viewport */
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #fff;
+            color: #333;
+            font-size: 1em;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h1>Pong Flowchart Builder</h1>
+            <div class="prompt">
+                <h2 id="prompt-title">Let's Begin!</h2>
+                <p id="prompt-text">Click 'Next Step' to start building the flowchart for the game Pong.</p>
+            </div>
+            <div class="buttons">
+                <button id="next-btn">Next Step</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+            <!-- Pong Animation Canvas -->
+            <canvas id="pong-canvas"></canvas>
+        </div>
+        <div class="flowchart-area">
+            <!-- Flowchart elements will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal for displaying the final flowchart -->
+    <button id="show-final-btn">Final Flow Chart</button>
+    <div id="modal-overlay">
+        <button id="return-btn">Return</button>
+        <div id="final-flowchart-container"></div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- START OF FLOWCHART LOGIC ---
+        const flowchartSteps = [
+            { id: 'start', type: 'shape', shape: 'oval', text: 'START', promptTitle: 'Question 1', promptText: 'What is the very first shape in any flowchart, used to signify the beginning?' },
+            { id: 'draw', type: 'shape', shape: 'rectangle', text: 'Draw Paddles & Ball', promptTitle: 'Next: Initialization', promptText: 'After starting, what is the first action the game loop must perform to display the game?' },
+            { id: 'input', type: 'shape', shape: 'rectangle', text: 'Get Player Input', promptTitle: 'Next: User Interaction', promptText: 'The objects are on screen. What does the game need to check for from the player?' },
+            { id: 'move-paddles', type: 'shape', shape: 'rectangle', text: 'Move Paddles', promptTitle: 'Next: Process Input', promptText: 'The game has the player\'s input. What should it do with that information?' },
+            { id: 'move-ball', type: 'shape', shape: 'rectangle', text: 'Move Ball', promptTitle: 'Next: Game Object Movement', promptText: 'The paddles have moved. What other object in Pong moves on its own?' },
+            { id: 'paddle-hit', type: 'decision', decisionText: 'Ball hit a paddle?', yesAction: { type: 'shape', shape: 'rectangle', text: 'Reverse Ball\'s X Direction' }, promptTitle: 'First Decision', promptText: 'The ball has moved. What is the first important collision we should check for?' },
+            { id: 'wall-hit', type: 'decision', decisionText: 'Ball hit wall?', yesAction: { type: 'shape', shape: 'rectangle', text: 'Reverse Ball\'s Y Direction' }, promptTitle: 'Next Collision Check', promptText: 'After checking for paddle hits, what is the next boundary collision to check for?' },
+            { id: 'score-check', type: 'decision', decisionText: 'Ball went past paddle?', yesAction: { type: 'shape', shape: 'rectangle', text: 'Update Score & Reset Ball' }, promptTitle: 'Final Check', promptText: 'What is the last, most important check to see if a point has been scored?' },
+            { id: 'game-over-check', type: 'decision', decisionText: 'Score limit reached?', yesAction: { type: 'shape', shape: 'oval', text: 'END' }, promptTitle: 'Game Over?', promptText: 'After a point is scored, what does the game need to check to see if it should end?' },
+            { id: 'loop', type: 'arrow', text: '⟲ Loop to "Draw"', promptTitle: 'The Game Loop', promptText: 'The score limit has not been reached. The game must continue by looping back. You have completed the flowchart!'}
+        ];
+
+        const flowchartArea = document.querySelector('.flowchart-area');
+        const nextBtn = document.getElementById('next-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const promptTitle = document.getElementById('prompt-title');
+        const promptText = document.getElementById('prompt-text');
+        const showFinalBtn = document.getElementById('show-final-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const finalFlowchartContainer = document.getElementById('final-flowchart-container');
+        const returnBtn = document.getElementById('return-btn');
+        
+        let currentStep = 0;
+
+        function buildFlowchart() {
+            flowchartArea.innerHTML = '';
+            flowchartSteps.forEach((step, index) => {
+                const block = document.createElement('div');
+                block.id = step.id;
+                block.className = 'flowchart-block';
+                if (index > 0 && step.type !== 'arrow') {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.innerHTML = '↓';
+                    block.appendChild(arrow);
+                }
+                if (step.type === 'shape') {
+                    const shape = document.createElement('div');
+                    shape.className = `shape ${step.shape}`;
+                    shape.textContent = step.text;
+                    block.appendChild(shape);
+                } else if (step.type === 'arrow') {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.innerHTML = step.text;
+                    block.appendChild(arrow);
+                } else if (step.type === 'decision') {
+                    const decisionContainer = document.createElement('div');
+                    decisionContainer.className = 'decision-container';
+                    const mainFlow = document.createElement('div');
+                    mainFlow.className = 'main-flow';
+                    const diamond = document.createElement('div');
+                    diamond.className = 'shape diamond';
+                    diamond.textContent = step.decisionText;
+                    const noArrow = document.createElement('div');
+                    noArrow.className = 'arrow';
+                    noArrow.innerHTML = '↓ <span class="arrow-label" style="left: -30px;">No</span>';
+                    noArrow.style.position = 'relative';
+                    mainFlow.appendChild(diamond);
+                    mainFlow.appendChild(noArrow);
+                    const sidePath = document.createElement('div');
+                    sidePath.className = 'side-path';
+                    const yesLabel = document.createElement('div');
+                    yesLabel.className = 'arrow-label';
+                    yesLabel.textContent = 'Yes';
+                    const connector = document.createElement('div');
+                    connector.className = 'connector';
+                    const yesActionShape = document.createElement('div');
+                    yesActionShape.className = `shape ${step.yesAction.shape}`;
+                    yesActionShape.textContent = step.yesAction.text;
+                    sidePath.appendChild(yesLabel);
+                    sidePath.appendChild(connector);
+                    sidePath.appendChild(yesActionShape);
+                    decisionContainer.appendChild(mainFlow);
+                    decisionContainer.appendChild(sidePath);
+                    block.appendChild(decisionContainer);
+                }
+                flowchartArea.appendChild(block);
+            });
+        }
+
+        function updatePrompt(stepIndex) {
+            if (flowchartSteps[stepIndex]) {
+                promptTitle.textContent = flowchartSteps[stepIndex].promptTitle;
+                promptText.textContent = flowchartSteps[stepIndex].promptText;
+            } else {
+                promptTitle.textContent = "Complete!";
+                promptText.textContent = "You've built the entire flowchart for Pong!";
+                nextBtn.disabled = true;
+                showFinalBtn.style.display = 'block';
+            }
+        }
+
+        function showNextStep() {
+            if (currentStep < flowchartSteps.length) {
+                const el = document.getElementById(flowchartSteps[currentStep].id);
+                if (el) el.classList.add('visible');
+                currentStep++;
+                updatePrompt(currentStep);
+            }
+        }
+
+        function resetFlowchart() {
+            currentStep = 0;
+            flowchartArea.querySelectorAll('.flowchart-block').forEach(el => el.classList.remove('visible'));
+            nextBtn.disabled = false;
+            showFinalBtn.style.display = 'none';
+            updatePrompt(0);
+        }
+
+        function showFinalFlowchart() {
+            const clonedFlowchart = flowchartArea.cloneNode(true);
+            clonedFlowchart.querySelectorAll('.flowchart-block').forEach(block => block.classList.add('visible'));
+            finalFlowchartContainer.innerHTML = '';
+            finalFlowchartContainer.appendChild(clonedFlowchart);
+            modalOverlay.style.visibility = 'hidden';
+            modalOverlay.style.display = 'flex';
+            finalFlowchartContainer.style.transform = 'scale(1)';
+            const scale = Math.min((window.innerWidth * 0.95) / finalFlowchartContainer.scrollWidth, (window.innerHeight * 0.95) / finalFlowchartContainer.scrollHeight, 1);
+            finalFlowchartContainer.style.transform = `scale(${scale})`;
+            modalOverlay.style.visibility = 'visible';
+        }
+
+        function hideFinalFlowchart() {
+            modalOverlay.style.display = 'none';
+        }
+
+        buildFlowchart();
+        nextBtn.addEventListener('click', showNextStep);
+        resetBtn.addEventListener('click', resetFlowchart);
+        showFinalBtn.addEventListener('click', showFinalFlowchart);
+        returnBtn.addEventListener('click', hideFinalFlowchart);
+        updatePrompt(0);
+        // --- END OF FLOWCHART LOGIC ---
+
+
+        // --- START OF PONG ANIMATION LOGIC ---
+        const canvas = document.getElementById('pong-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions based on its container
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.width * 0.6; // Maintain a 5:3 aspect ratio
+
+        let ball, player, opponent, gameOver;
+        const winningScore = 3;
+
+        function resetGame() {
+            gameOver = false;
+            ball = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 7,
+                speedX: 5,
+                speedY: 5
+            };
+            player = {
+                x: 10,
+                y: canvas.height / 2 - 40,
+                width: 10,
+                height: 80,
+                score: 0
+            };
+            opponent = {
+                x: canvas.width - 20,
+                y: canvas.height / 2 - 40,
+                width: 10,
+                height: 80,
+                score: 0
+            };
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.speedX = -ball.speedX; // Change direction
+            ball.speedY = 5;
+        }
+
+        function drawRect(x, y, w, h, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+        }
+
+        function drawCircle(x, y, r, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2, false);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawText(text, x, y, color) {
+            ctx.fillStyle = color;
+            ctx.font = '35px "Segoe UI"';
+            ctx.fillText(text, x, y);
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            // Move ball
+            ball.x += ball.speedX;
+            ball.y += ball.speedY;
+
+            // Opponent AI
+            opponent.y += (ball.y - (opponent.y + opponent.height / 2)) * 0.1;
+
+            // Wall collision (top/bottom)
+            if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+                ball.speedY = -ball.speedY;
+            }
+
+            // Paddle collision
+            let p = (ball.x < canvas.width / 2) ? player : opponent;
+            if (collision(ball, p)) {
+                let collidePoint = (ball.y - (p.y + p.height / 2));
+                collidePoint = collidePoint / (p.height / 2);
+                let angleRad = (Math.PI / 4) * collidePoint;
+                let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+                ball.speedX = direction * 5 * Math.cos(angleRad);
+                ball.speedY = 5 * Math.sin(angleRad);
+            }
+
+            // Scoring
+            if (ball.x - ball.radius < 0) {
+                opponent.score++;
+                resetBall();
+            } else if (ball.x + ball.radius > canvas.width) {
+                player.score++;
+                resetBall();
+            }
+
+            // Check for winner
+            if (player.score === winningScore || opponent.score === winningScore) {
+                gameOver = true;
+                setTimeout(resetGame, 2000); // Reset after 2 seconds
+            }
+        }
+
+        function collision(b, p) {
+            p.top = p.y;
+            p.bottom = p.y + p.height;
+            p.left = p.x;
+            p.right = p.x + p.width;
+
+            b.top = b.y - b.radius;
+            b.bottom = b.y + b.radius;
+            b.left = b.x - b.radius;
+            b.right = b.x + b.radius;
+
+            return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
+        }
+
+        function render() {
+            // Clear canvas
+            drawRect(0, 0, canvas.width, canvas.height, '#000');
+            
+            // Draw scores
+            drawText(player.score, canvas.width / 4, canvas.height / 5, 'white');
+            drawText(opponent.score, 3 * canvas.width / 4, canvas.height / 5, 'white');
+            
+            // Draw paddles and ball
+            drawRect(player.x, player.y, player.width, player.height, 'white');
+            drawRect(opponent.x, opponent.y, opponent.width, opponent.height, 'white');
+            drawCircle(ball.x, ball.y, ball.radius, 'white');
+            
+            if (gameOver) {
+                ctx.textAlign = "center";
+                drawText("Game Over", canvas.width / 2, canvas.height / 2, "red");
+                ctx.textAlign = "left";
+            }
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        resetGame();
+        gameLoop();
+        // --- END OF PONG ANIMATION LOGIC ---
+    });
+    </script>
+</body>
+</html>
