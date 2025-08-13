@@ -140,6 +140,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border-radius: 10px;
             overflow: hidden;
+            table-layout: fixed; /* Ensures columns respect width settings */
         }
         
         .pmi-table th {
@@ -199,7 +200,7 @@
             box-sizing: border-box; /* Ensures padding is included in width */
         }
 
-        /* NEW: This class styles the temporary div for PDF rendering */
+        /* UPDATED: This class styles the temporary div for PDF rendering */
         .pdf-render-div {
             width: 100%;
             min-height: 150px;
@@ -209,7 +210,8 @@
             font-size: 14px;
             background: white;
             white-space: pre-wrap; /* Renders newlines and wraps text */
-            word-break: break-word; /* Breaks long words to prevent overflow */
+            overflow-wrap: break-word; /* The new, more reliable property */
+            word-break: break-word; /* Kept for broader compatibility */
             box-sizing: border-box;
             font-family: 'Segoe UI', Arial, sans-serif; /* Ensure font consistency */
         }
@@ -251,15 +253,14 @@
             .tips {
                 page-break-inside: avoid;
             }
-            /* UPDATED: Improves how tables break across pages */
             .pmi-table {
-                page-break-inside: auto; /* Allow table to break */
+                page-break-inside: auto; 
             }
             .pmi-table tr {
-                page-break-inside: avoid; /* Avoid breaking inside a row */
+                page-break-inside: avoid;
             }
             h2 {
-                page-break-after: avoid; /* Avoid breaking right after a heading */
+                page-break-after: avoid;
             }
         }
         
@@ -484,10 +485,9 @@ Write at least 3 points..."></textarea>
             // --- Step 1: Replace textareas with divs for PDF rendering ---
             textareas.forEach(textarea => {
                 const div = document.createElement('div');
-                div.className = 'pdf-render-div'; // Use our new class for styling
-                div.innerText = textarea.value; // Use innerText to correctly handle newlines
+                div.className = 'pdf-render-div'; 
+                div.innerText = textarea.value; 
                 
-                // Hide the textarea and insert the new div in its place
                 textarea.style.display = 'none';
                 textarea.parentNode.insertBefore(div, textarea.nextSibling);
             });
@@ -510,9 +510,7 @@ Write at least 3 points..."></textarea>
             };
             
             // --- Step 2: Generate and save the PDF ---
-            // We use .then() and .finally() to ensure our cleanup code always runs
             html2pdf().set(opt).from(element).save().then(() => {
-                // Show success message
                 const statusDiv = document.getElementById('saveStatus');
                 statusDiv.style.display = 'block';
                 setTimeout(() => {
@@ -520,10 +518,8 @@ Write at least 3 points..."></textarea>
                 }, 3000);
             }).finally(() => {
                 // --- Step 3: Clean up and restore the original textareas ---
-                // Remove the temporary divs
                 element.querySelectorAll('.pdf-render-div').forEach(div => div.remove());
                 
-                // Show the original textareas again
                 textareas.forEach(textarea => {
                     textarea.style.display = 'block';
                 });
@@ -532,8 +528,6 @@ Write at least 3 points..."></textarea>
         
         // Clear form function (unchanged)
         function clearForm() {
-            // Using a custom modal instead of confirm() would be a good improvement,
-            // but for now, we'll leave the original logic.
             if (confirm('Are you sure you want to clear all your work? This cannot be undone.')) {
                 inputs.forEach(input => {
                     if (input.id !== 'date') {
