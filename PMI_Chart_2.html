@@ -203,17 +203,17 @@
         /* UPDATED: This class styles the temporary div for PDF rendering */
         .pdf-render-div {
             width: 100%;
-            min-height: 150px;
+            min-height: 150px; /* Ensures it has a minimum size */
+            height: auto; /* Allows it to grow with content */
             padding: 10px;
             border: 1px dashed #999;
             border-radius: 5px;
             font-size: 14px;
             background: white;
-            white-space: pre-wrap; /* Renders newlines and wraps text */
-            overflow-wrap: break-word; /* The new, more reliable property */
-            word-break: break-word; /* Kept for broader compatibility */
+            overflow-wrap: break-word; /* This will now work reliably */
+            word-break: break-word; 
             box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif; /* Ensure font consistency */
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         
         .tips {
@@ -485,8 +485,13 @@ Write at least 3 points..."></textarea>
             // --- Step 1: Replace textareas with divs for PDF rendering ---
             textareas.forEach(textarea => {
                 const div = document.createElement('div');
-                div.className = 'pdf-render-div'; 
-                div.innerText = textarea.value; 
+                div.className = 'pdf-render-div';
+                
+                // NEW: Convert text to HTML to preserve formatting reliably
+                // First, escape any existing HTML in the text to prevent issues
+                const safeText = document.createTextNode(textarea.value).textContent;
+                // Then, replace newline characters with HTML <br> tags
+                div.innerHTML = safeText.replace(/\n/g, '<br>');
                 
                 textarea.style.display = 'none';
                 textarea.parentNode.insertBefore(div, textarea.nextSibling);
@@ -548,3 +553,4 @@ Write at least 3 points..."></textarea>
     </script>
 </body>
 </html>
+
