@@ -1,273 +1,358 @@
-
-<artifacts> <artifact identifier="pmi-chart-template" type="text/html" title="PMI Chart Template for Game Analysis"> <!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>PMI Chart - Game Analysis</title> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> <style> body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
-    .header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-    
-    h1 {
-        margin: 0;
-        font-size: 2em;
-    }
-    
-    .button-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-        display: flex;
-        gap: 10px;
-    }
-    
-    .download-btn, .print-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .download-btn:hover, .print-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    }
-    
-    .download-btn:active, .print-btn:active {
-        transform: translateY(0);
-    }
-    
-    .save-status {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #4caf50;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        display: none;
-        animation: slideIn 0.3s ease;
-    }
-    
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    
-    .student-info {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-    
-    .info-field {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    label {
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 5px;
-        font-size: 0.9em;
-    }
-    
-    input {
-        padding: 10px;
-        border: 2px solid #e0e0e0;
-        border-radius: 5px;
-        font-size: 16px;
-    }
-    
-    .example-section {
-        background: #e8f5e9;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        border: 2px solid #4caf50;
-    }
-    
-    .example-header {
-        color: #2e7d32;
-        margin-bottom: 15px;
-        font-size: 1.2em;
-    }
-    
-    .pmi-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    
-    .pmi-table th {
-        background: #5c6bc0;
-        color: white;
-        padding: 15px;
-        text-align: left;
-        font-size: 1.1em;
-    }
-    
-    .pmi-table td {
-        padding: 15px;
-        border: 1px solid #e0e0e0;
-        vertical-align: top;
-    }
-    
-    .game-title {
-        background: #3949ab;
-        color: white;
-        text-align: center;
-        font-weight: bold;
-        font-size: 1.2em;
-    }
-    
-    .game-name-input {
-        background: transparent;
-        border: none;
-        border-bottom: 2px solid white;
-        color: white;
-        font-size: 1.1em;
-        width: 300px;
-        font-weight: bold;
-    }
-    
-    .plus-column {
-        background: #f1f8e9;
-    }
-    
-    .minus-column {
-        background: #fce4ec;
-    }
-    
-    .interesting-column {
-        background: #fff3e0;
-    }
-    
-    .writing-area {
-        width: 100%;
-        min-height: 150px;
-        padding: 10px;
-        border: 1px dashed #999;
-        border-radius: 5px;
-        font-size: 14px;
-        resize: vertical;
-        background: white;
-    }
-    
-    .tips {
-        background: #e3f2fd;
-        padding: 15px;
-        border-radius: 5px;
-        margin-top: 10px;
-        border-left: 4px solid #2196f3;
-    }
-    
-    .tips h3 {
-        margin-top: 0;
-        color: #1976d2;
-    }
-    
-    .tips ul {
-        margin: 10px 0;
-        padding-left: 20px;
-    }
-    
-    .tips li {
-        margin: 5px 0;
-    }
-    
-    @media print {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMI Chart - Game Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
         body {
-            background: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
-        .button-container {
-            display: none;
-        }
-        .save-status {
-            display: none;
-        }
+
         .header {
-            background: none;
-            color: black;
-            border: 2px solid black;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
         }
-        .tips {
-            page-break-inside: avoid;
+        
+        h1 {
+            margin: 0;
+            font-size: 2em;
         }
-        .pmi-table {
-            page-break-inside: avoid;
-        }
-    }
-    
-    .icon {
-        display: inline-block;
-        margin-right: 5px;
-    }
-    
-    @media (max-width: 768px) {
+        
         .button-container {
-            position: static;
-            margin-bottom: 20px;
-            justify-content: center;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .download-btn, .print-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover, .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .download-btn:active, .print-btn:active {
+            transform: translateY(0);
+        }
+        
+        .save-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .student-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .info-grid {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
-    }
-</style>
-</head> <body> <div class="button-container"> <button class="print-btn" onclick="window.print()"> 🖨️ Print </button> <button class="download-btn" onclick="downloadPDF()"> 📥 Download PDF </button> </div>
-<div id="content-to-pdf">
-    <div class="header">
-        <h1>🎮 PMI Chart: Classic Arcade Game Analysis 🎮</h1>
-        <p>Plus, Minus, Interesting - A thinking tool for game design</p>
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .example-section {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #4caf50;
+        }
+        
+        .example-header {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .pmi-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .pmi-table th {
+            background: #5c6bc0;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        .pmi-table td {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+            width: 33.33%; /* Ensure columns are equal width */
+        }
+        
+        .game-title {
+            background: #3949ab;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .game-name-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid white;
+            color: white;
+            font-size: 1.1em;
+            width: 300px;
+            font-weight: bold;
+        }
+        
+        .plus-column {
+            background: #f1f8e9;
+        }
+        
+        .minus-column {
+            background: #fce4ec;
+        }
+        
+        .interesting-column {
+            background: #fff3e0;
+        }
+        
+        .writing-area {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 1px dashed #999;
+            border-radius: 5px;
+            font-size: 14px;
+            resize: vertical;
+            background: white;
+            box-sizing: border-box; /* Ensures padding is included in width */
+        }
+
+        /* NEW: This class styles the temporary div for PDF rendering */
+        .pdf-render-div {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 1px dashed #999;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+            white-space: pre-wrap; /* Renders newlines and wraps text */
+            word-break: break-word; /* Breaks long words to prevent overflow */
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif; /* Ensure font consistency */
+        }
+        
+        .tips {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .tips h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        
+        .tips ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .tips li {
+            margin: 5px 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .button-container, .save-status {
+                display: none;
+            }
+            .header {
+                background: none;
+                color: black;
+                border: 2px solid black;
+            }
+            .tips {
+                page-break-inside: avoid;
+            }
+            /* UPDATED: Improves how tables break across pages */
+            .pmi-table {
+                page-break-inside: auto; /* Allow table to break */
+            }
+            .pmi-table tr {
+                page-break-inside: avoid; /* Avoid breaking inside a row */
+            }
+            h2 {
+                page-break-after: avoid; /* Avoid breaking right after a heading */
+            }
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .button-container {
+                position: static;
+                margin-bottom: 20px;
+                justify-content: center;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="print-btn" onclick="window.print()">
+            🖨️ Print
+        </button>
+        <button class="download-btn" onclick="downloadPDF()">
+            📥 Download PDF
+        </button>
     </div>
-    
-    <div class="student-info">
-        <div class="info-grid">
-            <div class="info-field">
-                <label for="student-name">Student Name:</label>
-                <input type="text" id="student-name" placeholder="Enter your name">
-            </div>
-            <div class="info-field">
-                <label for="date">Date:</label>
-                <input type="date" id="date">
+    <div id="content-to-pdf">
+        <div class="header">
+            <h1>🎮 PMI Chart: Classic Arcade Game Analysis 🎮</h1>
+            <p>Plus, Minus, Interesting - A thinking tool for game design</p>
+        </div>
+        
+        <div class="student-info">
+            <div class="info-grid">
+                <div class="info-field">
+                    <label for="student-name">Student Name:</label>
+                    <input type="text" id="student-name" placeholder="Enter your name">
+                </div>
+                <div class="info-field">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date">
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="example-section">
-        <h2 class="example-header">📚 EXAMPLE: PMI Chart for PONG</h2>
+        
+        <div class="example-section">
+            <h2 class="example-header">📚 EXAMPLE: PMI Chart for PONG</h2>
+            <table class="pmi-table">
+                <tr>
+                    <th class="plus-column">➕ Plus (Positives)</th>
+                    <th class="minus-column">➖ Minus (Negatives)</th>
+                    <th class="interesting-column">💡 Interesting</th>
+                </tr>
+                <tr>
+                    <td class="plus-column">
+                        <ul>
+                            <li>Simple controls - easy to learn</li>
+                            <li>Easy to understand objective</li>
+                            <li>Quick rounds keep it exciting</li>
+                            <li>Instant feedback when scoring</li>
+                        </ul>
+                    </td>
+                    <td class="minus-column">
+                        <ul>
+                            <li>Can get repetitive quickly</li>
+                            <li>Limited gameplay variety</li>
+                            <li>No progression or levels</li>
+                            <li>Very basic graphics</li>
+                        </ul>
+                    </td>
+                    <td class="interesting-column">
+                        <ul>
+                            <li>First commercially successful game</li>
+                            <li>Two-player competitive gameplay</li>
+                            <li>Uses physics for ball movement</li>
+                            <li>Inspired thousands of games</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <h2>🎯 Game 1 Analysis</h2>
         <table class="pmi-table">
+            <tr>
+                <td colspan="3" class="game-title">
+                    Game Name: <input type="text" class="game-name-input" id="game1-name" placeholder="Enter game name">
+                </td>
+            </tr>
             <tr>
                 <th class="plus-column">➕ Plus (Positives)</th>
                 <th class="minus-column">➖ Minus (Negatives)</th>
@@ -275,173 +360,197 @@
             </tr>
             <tr>
                 <td class="plus-column">
-                    <ul>
-                        <li>Simple controls - easy to learn</li>
-                        <li>Easy to understand objective</li>
-                        <li>Quick rounds keep it exciting</li>
-                        <li>Instant feedback when scoring</li>
-                    </ul>
+                    <textarea class="writing-area" id="game1-plus" placeholder="What makes this game fun?
+• Easy or hard to learn?
+• What keeps you playing?
+• What do you enjoy most?
+• What works well?
+Write at least 3 points..."></textarea>
                 </td>
                 <td class="minus-column">
-                    <ul>
-                        <li>Can get repetitive quickly</li>
-                        <li>Limited gameplay variety</li>
-                        <li>No progression or levels</li>
-                        <li>Very basic graphics</li>
-                    </ul>
+                    <textarea class="writing-area" id="game1-minus" placeholder="What could be better?
+• What gets boring?
+• What's frustrating?
+• What's missing?
+• What doesn't work well?
+Write at least 3 points..."></textarea>
                 </td>
                 <td class="interesting-column">
-                    <ul>
-                        <li>First commercially successful game</li>
-                        <li>Two-player competitive gameplay</li>
-                        <li>Uses physics for ball movement</li>
-                        <li>Inspired thousands of games</li>
-                    </ul>
+                    <textarea class="writing-area" id="game1-interesting" placeholder="What's unique or surprising?
+• Cool game mechanics?
+• Historical facts?
+• Clever design choices?
+• Things that make you think?
+Write at least 3 points..."></textarea>
                 </td>
             </tr>
         </table>
-    </div>
-    
-    <h2>🎯 Game 1 Analysis</h2>
-    <table class="pmi-table">
-        <tr>
-            <td colspan="3" class="game-title">
-                Game Name: <input type="text" class="game-name-input" id="game1-name" placeholder="Enter game name">
-            </td>
-        </tr>
-        <tr>
-            <th class="plus-column">➕ Plus (Positives)</th>
-            <th class="minus-column">➖ Minus (Negatives)</th>
-            <th class="interesting-column">💡 Interesting</th>
-        </tr>
-        <tr>
-            <td class="plus-column">
-                <textarea class="writing-area" id="game1-plus" placeholder="What makes this game fun?
-• Easy or hard to learn? • What keeps you playing? • What do you enjoy most? • What works well?
-Write at least 3 points..."></textarea> </td> <td class="minus-column"> <textarea class="writing-area" id="game1-minus" placeholder="What could be better? • What gets boring? • What's frustrating? • What's missing? • What doesn't work well?
-Write at least 3 points..."></textarea> </td> <td class="interesting-column"> <textarea class="writing-area" id="game1-interesting" placeholder="What's unique or surprising? • Cool game mechanics? • Historical facts? • Clever design choices? • Things that make you think?
-Write at least 3 points..."></textarea> </td> </tr> </table>
-    <h2>🎯 Game 2 Analysis</h2>
-    <table class="pmi-table">
-        <tr>
-            <td colspan="3" class="game-title">
-                Game Name: <input type="text" class="game-name-input" id="game2-name" placeholder="Enter game name">
-            </td>
-        </tr>
-        <tr>
-            <th class="plus-column">➕ Plus (Positives)</th>
-            <th class="minus-column">➖ Minus (Negatives)</th>
-            <th class="interesting-column">💡 Interesting</th>
-        </tr>
-        <tr>
-            <td class="plus-column">
-                <textarea class="writing-area" id="game2-plus" placeholder="What makes this game fun?
-• Easy or hard to learn? • What keeps you playing? • What do you enjoy most? • What works well?
-Write at least 3 points..."></textarea> </td> <td class="minus-column"> <textarea class="writing-area" id="game2-minus" placeholder="What could be better? • What gets boring? • What's frustrating? • What's missing? • What doesn't work well?
-Write at least 3 points..."></textarea> </td> <td class="interesting-column"> <textarea class="writing-area" id="game2-interesting" placeholder="What's unique or surprising? • Cool game mechanics? • Historical facts? • Clever design choices? • Things that make you think?
-Write at least 3 points..."></textarea> </td> </tr> </table>
-    <div class="tips">
-        <h3>💭 Reflection Questions</h3>
-        <p>After completing your PMI charts, think about:</p>
-        <ul>
-            <li>Which game mechanics from these classics could work in your own game?</li>
-            <li>What mistakes from these games will you avoid in your design?</li>
-            <li>What interesting features could you modernise or improve?</li>
-            <li>How can you make your game easy to learn but hard to master?</li>
-        </ul>
-    </div>
-    
-    <div class="tips" style="background: #f3e5f5; border-left-color: #9c27b0;">
-        <h3>🎮 Remember: Input → Process → Output</h3>
-        <p>As you analyse each game, identify:</p>
-        <ul>
-            <li><strong>INPUT:</strong> What controls does the player use?</li>
-            <li><strong>PROCESS:</strong> What happens in the game's code/logic?</li>
-            <li><strong>OUTPUT:</strong> What does the player see/hear as a result?</li>
-        </ul>
-    </div>
-</div>
-
-<div class="save-status" id="saveStatus">
-    ✓ PDF Downloaded Successfully!
-</div>
-
-<script>
-    // Set today's date automatically
-    document.getElementById('date').valueAsDate = new Date();
-    
-    // Auto-save to localStorage
-    const inputs = document.querySelectorAll('input, textarea');
-    
-    // Load saved data on page load
-    window.addEventListener('load', () => {
-        inputs.forEach(input => {
-            const savedValue = localStorage.getItem(input.id);
-            if (savedValue) {
-                input.value = savedValue;
-            }
-        });
-    });
-    
-    // Save data as user types
-    inputs.forEach(input => {
-        input.addEventListener('input', () => {
-            localStorage.setItem(input.id, input.value);
-        });
-    });
-    
-    // Download PDF function
-    function downloadPDF() {
-        const element = document.getElementById('content-to-pdf');
-        const studentName = document.getElementById('student-name').value || 'Student';
-        const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
+        <h2>🎯 Game 2 Analysis</h2>
+        <table class="pmi-table">
+            <tr>
+                <td colspan="3" class="game-title">
+                    Game Name: <input type="text" class="game-name-input" id="game2-name" placeholder="Enter game name">
+                </td>
+            </tr>
+            <tr>
+                <th class="plus-column">➕ Plus (Positives)</th>
+                <th class="minus-column">➖ Minus (Negatives)</th>
+                <th class="interesting-column">💡 Interesting</th>
+            </tr>
+            <tr>
+                <td class="plus-column">
+                    <textarea class="writing-area" id="game2-plus" placeholder="What makes this game fun?
+• Easy or hard to learn?
+• What keeps you playing?
+• What do you enjoy most?
+• What works well?
+Write at least 3 points..."></textarea>
+                </td>
+                <td class="minus-column">
+                    <textarea class="writing-area" id="game2-minus" placeholder="What could be better?
+• What gets boring?
+• What's frustrating?
+• What's missing?
+• What doesn't work well?
+Write at least 3 points..."></textarea>
+                </td>
+                <td class="interesting-column">
+                    <textarea class="writing-area" id="game2-interesting" placeholder="What's unique or surprising?
+• Cool game mechanics?
+• Historical facts?
+• Clever design choices?
+• Things that make you think?
+Write at least 3 points..."></textarea>
+                </td>
+            </tr>
+        </table>
+        <div class="tips">
+            <h3>💭 Reflection Questions</h3>
+            <p>After completing your PMI charts, think about:</p>
+            <ul>
+                <li>Which game mechanics from these classics could work in your own game?</li>
+                <li>What mistakes from these games will you avoid in your design?</li>
+                <li>What interesting features could you modernise or improve?</li>
+                <li>How can you make your game easy to learn but hard to master?</li>
+            </ul>
+        </div>
         
-        // PDF options
-        const opt = {
-            margin: 10,
-            filename: `PMI-Chart-${studentName}-${date}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2,
-                useCORS: true,
-                logging: false
-            },
-            jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
-                orientation: 'portrait' 
-            }
-        };
+        <div class="tips" style="background: #f3e5f5; border-left-color: #9c27b0;">
+            <h3>🎮 Remember: Input → Process → Output</h3>
+            <p>As you analyse each game, identify:</p>
+            <ul>
+                <li><strong>INPUT:</strong> What controls does the player use?</li>
+                <li><strong>PROCESS:</strong> What happens in the game's code/logic?</li>
+                <li><strong>OUTPUT:</strong> What does the player see/hear as a result?</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="save-status" id="saveStatus">
+        ✓ PDF Downloaded Successfully!
+    </div>
+
+    <script>
+        // Set today's date automatically
+        document.getElementById('date').valueAsDate = new Date();
         
-        // Generate and save the PDF
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Show success message
-            const statusDiv = document.getElementById('saveStatus');
-            statusDiv.style.display = 'block';
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
-        });
-    }
-    
-    // Clear form function
-    function clearForm() {
-        if (confirm('Are you sure you want to clear all your work? This cannot be undone.')) {
+        // Auto-save to localStorage
+        const inputs = document.querySelectorAll('input, textarea');
+        
+        // Load saved data on page load
+        window.addEventListener('load', () => {
             inputs.forEach(input => {
-                if (input.id !== 'date') {
-                    input.value = '';
-                    localStorage.removeItem(input.id);
+                const savedValue = localStorage.getItem(input.id);
+                if (savedValue) {
+                    input.value = savedValue;
                 }
             });
+        });
+        
+        // Save data as user types
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                localStorage.setItem(input.id, input.value);
+            });
+        });
+        
+        // REWRITTEN Download PDF function
+        function downloadPDF() {
+            const element = document.getElementById('content-to-pdf');
+            const studentName = document.getElementById('student-name').value || 'Student';
+            const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
+            const textareas = element.querySelectorAll('.writing-area');
+
+            // --- Step 1: Replace textareas with divs for PDF rendering ---
+            textareas.forEach(textarea => {
+                const div = document.createElement('div');
+                div.className = 'pdf-render-div'; // Use our new class for styling
+                div.innerText = textarea.value; // Use innerText to correctly handle newlines
+                
+                // Hide the textarea and insert the new div in its place
+                textarea.style.display = 'none';
+                textarea.parentNode.insertBefore(div, textarea.nextSibling);
+            });
+
+            // PDF options
+            const opt = {
+                margin: 10,
+                filename: `PMI-Chart-${studentName}-${date}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                }
+            };
+            
+            // --- Step 2: Generate and save the PDF ---
+            // We use .then() and .finally() to ensure our cleanup code always runs
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Show success message
+                const statusDiv = document.getElementById('saveStatus');
+                statusDiv.style.display = 'block';
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 3000);
+            }).finally(() => {
+                // --- Step 3: Clean up and restore the original textareas ---
+                // Remove the temporary divs
+                element.querySelectorAll('.pdf-render-div').forEach(div => div.remove());
+                
+                // Show the original textareas again
+                textareas.forEach(textarea => {
+                    textarea.style.display = 'block';
+                });
+            });
         }
-    }
-    
-    // Add keyboard shortcut for PDF download (Ctrl/Cmd + S)
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-            e.preventDefault();
-            downloadPDF();
+        
+        // Clear form function (unchanged)
+        function clearForm() {
+            // Using a custom modal instead of confirm() would be a good improvement,
+            // but for now, we'll leave the original logic.
+            if (confirm('Are you sure you want to clear all your work? This cannot be undone.')) {
+                inputs.forEach(input => {
+                    if (input.id !== 'date') {
+                        input.value = '';
+                        localStorage.removeItem(input.id);
+                    }
+                });
+            }
         }
-    });
-</script>
-</body> </html> </artifact> </artifacts>
+        
+        // Add keyboard shortcut for PDF download (Ctrl/Cmd + S) (unchanged)
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                downloadPDF();
+            }
+        });
+    </script>
+</body>
+</html>
